@@ -1,0 +1,12 @@
+node_modules
+coverage
+spike.ts
+build
+dist
+.vscode
+*.tgz
+/src/dsl/*.ts
+/src/plug-in/*.ts
+/src/section/*.ts
+/src/generator/*.ts
+/src/transcriber/*.ts

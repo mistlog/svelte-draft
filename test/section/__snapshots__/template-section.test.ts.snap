@@ -1,0 +1,115 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`translate template section extrat template from code 1`] = `
+"<h1>Hello {name.toUpperCase()}!</h1>
+"
+`;
+
+exports[`translate template section translate await 1`] = `
+"{#await promise}
+<div>...waiting</div>
+{:then number}
+<p>The number is {number}</p>
+{:catch error}
+<p style=\\"color: red\\">{error.message}</p>
+{/await}
+"
+`;
+
+exports[`translate template section translate await: only then exist 1`] = `
+"{#await promise} {:then number}
+<p>The number is {number}</p>
+{/await}
+"
+`;
+
+exports[`translate template section translate await: then & loading 1`] = `
+"{#await promise}
+<div>...waiting</div>
+{:then number}
+<p>The number is {number}</p>
+{/await}
+"
+`;
+
+exports[`translate template section translate each 1`] = `
+"<h1>Te Famous Cats of YouTube</h1>
+<ul>
+  {#each cats as cat, index (cat.id)}
+  <li>
+    <a target=\\"_blank\\">
+      {index + 1}: {cat.name}
+    </a>
+  </li>
+  {/each}
+</ul>
+"
+`;
+
+exports[`translate template section translate each with value 1`] = `
+"<ul>
+  {#each cats as cat}
+  <li>
+    <a target=\\"_blank\\">
+      {index + 1}: {cat.name}
+    </a>
+  </li>
+  {/each}
+</ul>
+"
+`;
+
+exports[`translate template section translate each with value and index 1`] = `
+"<ul>
+  {#each cats as cat, index}
+  <li>
+    <a target=\\"_blank\\">
+      {index + 1}: {cat.name}
+    </a>
+  </li>
+  {/each}
+</ul>
+"
+`;
+
+exports[`translate template section translate each with value and key 1`] = `
+"<ul>
+  {#each cats as cat (cat.id)}}
+  <li>
+    <a target=\\"_blank\\">
+      {index + 1}: {cat.name}
+    </a>
+  </li>
+  {/each}
+</ul>
+"
+`;
+
+exports[`translate template section translate else 1`] = `
+"{#if x > 10}
+<p>{x} is greater than 10</p>
+{:else if x < 5}
+<p>{x} is less than 5</p>
+
+{:else}
+<p>{x} is between 5 and 10</p>
+
+{/if}
+"
+`;
+
+exports[`translate template section translate if 1`] = `
+"{#if user.loggedIn}
+<button on:click=\\"{toggle}\\">
+  Log out
+</button>
+{/if}
+"
+`;
+
+exports[`translate template section translate tag attribute starts with on 1`] = `
+"<button on:click=\\"{handleClick}\\">
+  Clicked {count} {count === 1 ? 'time' : 'times'}
+</button>
+"
+`;

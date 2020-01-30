@@ -1,0 +1,240 @@
+import { SvelteTranscriber } from "../../src";
+import { FormatTemplate } from "../utility/utility";
+
+describe("translate template section", () =>
+{
+    test("extrat template from code", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                let name = 'world';
+                
+                //@ts-ignore
+                <UI/>;
+            }
+
+            function UI(name: string)
+            {
+                <h1>Hello {name.toUpperCase()}!</h1>;
+            }
+        `;
+
+        SnapshotTest(code);
+
+    })
+
+    test("translate tag attribute starts with on", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <button onClick={handleClick}>
+                    Clicked {count} {count === 1 ? 'time' : 'times'}
+                </button>;
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("translate if", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <if condition={user.loggedIn}>
+                    <button onClick={toggle}>
+                        Log out
+                    </button>
+                </if>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("translate else", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                let x = 7;
+            
+                <if condition={x > 10}>
+                    <p>{x} is greater than 10</p>
+                    <else condition={x < 5}>
+                        <p>{x} is less than 5</p>
+                    </else>
+                    <else>
+                        <p>{x} is between 5 and 10</p>
+                    </else>
+                </if>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("translate each", () =>
+    {
+        const code = `
+            interface ICat
+            {
+                id: string;
+                name: string;
+            }
+            
+            export default function App()
+            {
+                let cats: Array<ICat> = [
+                    { id: 'J---aiyznGQ', name: 'Keyboard Cat' },
+                    { id: 'z_AbfPXTKms', name: 'Maru' },
+                    { id: 'OUtn3pvWmpg', name: 'Henri The Existential Cat' }
+                ];
+            
+                <h1>Te Famous Cats of YouTube</h1>;
+            
+                <ul>
+                    <each from={cats}>
+                        {(cat: ICat, index: number, key = cat.id) => (
+                            <li>
+                                <a target="_blank">
+                                    {index + 1}: {cat.name}
+                                </a>
+                            </li>
+                        )}
+                    </each>
+                </ul>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("translate each with value", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <ul>
+                    <each from={cats}>
+                        {(cat: ICat) => (
+                            <li>
+                                <a target="_blank">
+                                    {index + 1}: {cat.name}
+                                </a>
+                            </li>
+                        )}
+                    </each>
+                </ul>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("translate each with value and index", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <ul>
+                    <each from={cats}>
+                        {(cat: ICat, index: number) => (
+                            <li>
+                                <a target="_blank">
+                                    {index + 1}: {cat.name}
+                                </a>
+                            </li>
+                        )}
+                    </each>
+                </ul>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("translate each with value and key", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <ul>
+                    <each from={cats}>
+                        {(cat: ICat, key = cat.id) => (
+                            <li>
+                                <a target="_blank">
+                                    {index + 1}: {cat.name}
+                                </a>
+                            </li>
+                        )}
+                    </each>
+                </ul>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("translate await: only then exist", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <await>
+                    {{
+                        promise: promise
+                            .then(number => <p>The number is {number}</p>)
+                    }}
+                </await>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("translate await: then & loading", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <await>
+                    {{
+                        loading: <div>...waiting</div>,
+                        promise: promise
+                            .then(number => <p>The number is {number}</p>)
+                    }}
+                </await>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("translate await", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <await>
+                    {{
+                        loading: <div>...waiting</div>,
+                        promise: promise
+                            .then(number => <p>The number is {number}</p>)
+                            .catch((error: Error) => <p style="color: red">{error.message}</p>)
+                    }}
+                </await>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+})
+
+function SnapshotTest(code: string)
+{
+    const { template_section } = new SvelteTranscriber(code).TranscribeToSections();
+    expect(FormatTemplate(template_section)).toMatchSnapshot();
+}
