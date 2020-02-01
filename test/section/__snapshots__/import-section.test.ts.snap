@@ -1,5 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`translate import section extrat import from code 1`] = `"import Nested from \\"./Nested.svelte\\";"`;
+exports[`translate import section extrat import from code 1`] = `
+"import Nested from \\"./Nested.svelte\\";
+import { count as $count } from \\"./store.js\\";"
+`;
 
 exports[`translate import section remove ts related import 1`] = `"import { Test } from \\"./Nested.svelte\\";"`;

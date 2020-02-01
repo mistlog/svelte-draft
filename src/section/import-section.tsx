@@ -16,7 +16,7 @@ export function TranslateImport(statements: Array<NodePath<ImportDeclaration>>)
         //
         if (import_from.startsWith(".") || import_from.startsWith(".."))
         {
-            cloned.source.value = `${import_from}.svelte`;
+            cloned.source.value = import_from.replace(".tsx", "");
         }
         translated.push(cloned);
     })

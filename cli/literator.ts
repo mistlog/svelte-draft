@@ -3,6 +3,9 @@ import * as traverse from "filewalker";
 import * as watch from "node-watch";
 import { SvelteTranscriber } from "../src";
 import { config } from "./config";
+import { Transcriber } from "typedraft";
+import { transformSync } from "@babel/core";
+import * as TypescriptPreset from "@babel/preset-typescript";
 
 function TraverseDirectory(path: string, callback: (name: string, path: string) => void)
 {
@@ -86,16 +89,44 @@ export function CrossoutDirectory(path: string)
 
 export function ComposeFile(source: string)
 {
-    //
+    if (source.endsWith(".svelte.tsx"))
+    {
+        TranscribeSvelteDraft(source);
+    }
+    else if (source.endsWith(".js.tsx"))
+    {
+        TranscribeTypeDraft(source);
+    }
+}
+
+function TranscribeTypeDraft(source: string)
+{
+    const code = readFileSync(source, "utf8");
+    const transcriber = new Transcriber(code);
+    config.dsls.forEach(dsl => transcriber.AddDSL(dsl.name, dsl.dsl));
+
+    const ts_code = transcriber.Transcribe();
+
+    const js_code = transformSync(ts_code, {
+        filename: "script.tsx",
+        ast: true,
+        presets: [[TypescriptPreset, { jsxPragma: "preserve", isTSX: true, allExtensions: true }]]
+    }).code;
+
+    outputFileSync(source.replace(".tsx", ""), js_code, "utf8");
+}
+
+function TranscribeSvelteDraft(source: string)
+{
     const code = readFileSync(source, "utf8");
     const transcriber = new SvelteTranscriber(code);
     config.dsls.forEach(dsl => transcriber.AddDSL(dsl.name, dsl.dsl));
     const { import_section, script_section, template_section } = transcriber.TranscribeToSections();
-    
+
     //
-    const style = source.replace(".tsx", ".css");
+    const style = source.replace(".svelte.tsx", ".css");
     const style_section = existsSync(style) ? readFileSync(style, "utf8") : "";
-    
+
     //
     const component = [
         "<script>",
@@ -110,6 +141,5 @@ export function ComposeFile(source: string)
         style_section,
         "</style>"
     ].join("\n");
-    outputFileSync(source.replace(".tsx", ".svelte"), component, "utf8");
+    outputFileSync(source.replace(".tsx", ""), component, "utf8");
 }
-

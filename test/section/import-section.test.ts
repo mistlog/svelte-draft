@@ -5,11 +5,13 @@ describe("translate import section", () =>
     test("extrat import from code", () =>
     {
         const code = `
-            import Nested from "./Nested";
+            import Nested from "./Nested.svelte.tsx";
+            import { count as $count } from "./store.js.tsx";
 
             export default function App()
             {
                 let name = "";
+                console.log($count);
                 
                 <p>This is a paragraph.</p>;
                 <Nested/>;
@@ -23,7 +25,7 @@ describe("translate import section", () =>
     test("remove ts related import", () =>
     {
         const code = `
-            import {ITest, Test} from "./Nested";
+            import {ITest, Test} from "./Nested.svelte.tsx";
 
             export default function App()
             {
