@@ -19,7 +19,7 @@ export class OpeningElementVisitor {}
 ```
 
 ```typescript
-const TargetTable = { DoubleClick: "dblclick" };
+const TargetTable = { DoubleClick: "dblclick", InnerHTML: "innerHTML", contentEditable: "contenteditable" };
 ```
 
 ```typescript
@@ -32,7 +32,9 @@ function HandleAttributes(e: NodePath<JSXOpeningElement>) {
         if (attr.type === "JSXAttribute" && attr.name.type === "JSXIdentifier") {
             const name = attr.name.name;
             NamespaceList.forEach(namespace => {
-                if (name.startsWith(namespace)) {
+                if (TargetTable[name]) {
+                    attr.name = jsxIdentifier(TargetTable[name]);
+                } else if (name.startsWith(namespace)) {
                     const raw_target = name.substr(namespace.length);
                     const target = TargetTable[raw_target] || raw_target.toLowerCase();
                     attr.name = jsxNamespacedName(jsxIdentifier(namespace), jsxIdentifier(target));

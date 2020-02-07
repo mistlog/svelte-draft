@@ -23,7 +23,9 @@ export class OpeningElementVisitor { }
 }
 
 const TargetTable = {
-    "DoubleClick": "dblclick"
+    "DoubleClick": "dblclick",
+    "InnerHTML": "innerHTML",
+    "contentEditable": "contenteditable"
 }
 
 const NamespaceList = [
@@ -39,7 +41,11 @@ function HandleAttributes(e: NodePath<JSXOpeningElement>)
             const name = attr.name.name;
             NamespaceList.forEach(namespace =>
             {
-                if (name.startsWith(namespace))
+                if (TargetTable[name])
+                {
+                    attr.name = jsxIdentifier(TargetTable[name]);
+                }
+                else if (name.startsWith(namespace))
                 {
                     const raw_target = name.substr(namespace.length);
                     const target = TargetTable[raw_target] || raw_target.toLowerCase();
