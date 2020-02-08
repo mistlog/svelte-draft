@@ -7,6 +7,11 @@ export function TranslateImport(statements: Array<NodePath<ImportDeclaration>>) 
         const cloned = cloneDeep(node);
         const import_from = cloned.source.value;
 
+        // for store auto subscription function AutoSubscribe
+        if (import_from.includes("svelte-types")) {
+            return;
+        }
+
         //
         if (import_from.startsWith(".") || import_from.startsWith("..")) {
             cloned.source.value = import_from.replace(".tsx", "");

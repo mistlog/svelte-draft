@@ -37,4 +37,20 @@ describe("translate import section", () =>
         const { import_section } = new SvelteTranscriber(code).TranscribeToSections();
         expect(import_section).toMatchSnapshot();
     })
+
+    test("remove ts related import", () =>
+    {
+        const code = `
+            import { count } from "./store.js.tsx";
+            import { AutoSubscribe } from "svelte-types";
+
+            export default function App($count = AutoSubscribe(count))
+            {
+                <div>{$count}</div>
+            }
+        `;
+
+        const { import_section } = new SvelteTranscriber(code).TranscribeToSections();
+        expect(import_section).toMatchSnapshot();
+    })
 })
