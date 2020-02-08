@@ -4,6 +4,10 @@ export function TranslateScript(body: NodePath<BlockStatement>) {
     body.get("body").forEach(each => {
         if (each.isVariableDeclaration() && each.node.declarations.length === 1) {
             const [declarator] = each.get("declarations");
+            if (ToString(declarator.node).startsWith("$")) {
+                // ignore variable declaration starts with $
+                return;
+            }
             const init = declarator.get("init");
             if (init.isIdentifier() && init.node.name === "props") {
                 <HandleProps />;

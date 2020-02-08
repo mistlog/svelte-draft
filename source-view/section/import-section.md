@@ -8,6 +8,8 @@ export function TranslateImport(statements: Array<NodePath<ImportDeclaration>>) 
         const import_from = cloned.source.value;
 
         // for store auto subscription function AutoSubscribe
+
+        // remove it, because this function will never be called
         if (import_from.includes("svelte-types")) {
             return;
         }

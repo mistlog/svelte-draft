@@ -14,6 +14,8 @@ export let question;"
 
 exports[`translate script section extrat script from code 1`] = `"let name = 'world';"`;
 
+exports[`translate script section ignore variable declaration starts with $ 1`] = `"let greeting = 'hello';"`;
+
 exports[`translate script section track change 1`] = `
 "let count = 0;
 let doubled = 0;
