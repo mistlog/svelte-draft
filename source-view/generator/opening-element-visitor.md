@@ -19,7 +19,7 @@ export class OpeningElementVisitor {}
 ```
 
 ```typescript
-const TargetTable = { DoubleClick: "dblclick", InnerHTML: "innerHTML", contentEditable: "contenteditable" };
+const TargetTable = { DoubleClick: "dblclick", InnerHTML: "innerHTML", contentEditable: "contenteditable", Ref: "this" };
 ```
 
 ```typescript

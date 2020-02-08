@@ -25,7 +25,8 @@ export class OpeningElementVisitor { }
 const TargetTable = {
     "DoubleClick": "dblclick",
     "InnerHTML": "innerHTML",
-    "contentEditable": "contenteditable"
+    "contentEditable": "contenteditable",
+    "Ref": "this"
 }
 
 const NamespaceList = [
