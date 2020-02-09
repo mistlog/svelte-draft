@@ -45,37 +45,49 @@ function HandleAttributes(e: NodePath<JSXOpeningElement>)
 
             if (["transition", "in", "out", "localTransition"].includes(name))
             {
-                const value = attr.value as JSXExpressionContainer;
-                const config = value.expression as CallExpression;
-
-                // use compact to avoid \n in params after ToString
-                const args = config.arguments.map(arg => ToString(arg, { compact: true }));
-                const [transition_function, transition_params] = args;
-
-                // use VerticalBar and replace it with | latter because | is invalid in JSX
-                let namespace = name === "localTransition" ? `transition` : name;
-                let function_name = name === "localTransition" ? `${transition_function}${VerticalBar}local` : transition_function;
-                attr.name = jsxNamespacedName(jsxIdentifier(namespace), jsxIdentifier(function_name));
-                attr.value = transition_params ? stringLiteral(`{${transition_params}}`) : null;
+                //@ts-ignore
+                <HandleTransition />;
             }
             else
             {
-                NamespaceList.forEach(namespace =>
-                {
-                    if (TargetTable[name])
-                    {
-                        attr.name = jsxIdentifier(TargetTable[name]);
-                    }
-                    else if (name.startsWith(namespace))
-                    {
-                        const raw_target = name.substr(namespace.length);
-                        const target = TargetTable[raw_target] || raw_target.toLowerCase();
-                        attr.name = jsxNamespacedName(jsxIdentifier(namespace), jsxIdentifier(target));
-                    }
-
-                })
+                //@ts-ignore
+                <HandleNamespace/>;
             }
         }
+    })
+}
+
+function HandleTransition(attr: JSXAttribute)
+{
+    const value = attr.value as JSXExpressionContainer;
+    const config = value.expression as CallExpression;
+
+    // use compact to avoid \n in params after ToString
+    const args = config.arguments.map(arg => ToString(arg, { compact: true }));
+    const [transition_function, transition_params] = args;
+
+    // use VerticalBar and replace it with | latter because | is invalid in JSX
+    let namespace = name === "localTransition" ? `transition` : name;
+    let function_name = name === "localTransition" ? `${transition_function}${VerticalBar}local` : transition_function;
+    attr.name = jsxNamespacedName(jsxIdentifier(namespace), jsxIdentifier(function_name));
+    attr.value = transition_params ? stringLiteral(`{${transition_params}}`) : null;
+}
+
+function HandleNamespace(attr: JSXAttribute, name: string)
+{
+    NamespaceList.forEach(namespace =>
+    {
+        if (TargetTable[name])
+        {
+            attr.name = jsxIdentifier(TargetTable[name]);
+        }
+        else if (name.startsWith(namespace))
+        {
+            const raw_target = name.substr(namespace.length);
+            const target = TargetTable[raw_target] || raw_target.toLowerCase();
+            attr.name = jsxNamespacedName(jsxIdentifier(namespace), jsxIdentifier(target));
+        }
+
     })
 }
 
