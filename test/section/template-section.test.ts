@@ -231,6 +231,65 @@ describe("translate template section", () =>
 
         SnapshotTest(code);
     })
+
+    test("handle transition", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <p transition={TransitionConfig(fade,{ y: 200, duration: 2000 })}>
+                    Fades in and out
+	            </p>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("handle transition: without params", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <p transition={TransitionConfig(fade)}>
+                    Fades in and out
+	            </p>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("handle transition: in and out", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <p in={TransitionConfig(fly)} out={TransitionConfig(fade,{ y: 200, duration: 2000 })}>
+                    Fades in and out
+	            </p>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("handle local transition", () =>
+    {
+        // config function name doesn't matter
+        const code = `
+            export default function App()
+            {
+                <div localTransition={ConfigTransition(slide)}>
+                    {item}
+                </div>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    
 })
 
 function SnapshotTest(code: string)

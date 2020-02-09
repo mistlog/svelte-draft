@@ -1,4 +1,8 @@
 ```typescript
+const VerticalBar = "$VERTICAL_BAR$";
+```
+
+```typescript
 export class OpeningElementVisitor {}
 ```
 
@@ -31,15 +35,30 @@ function HandleAttributes(e: NodePath<JSXOpeningElement>) {
     e.node.attributes.forEach(attr => {
         if (attr.type === "JSXAttribute" && attr.name.type === "JSXIdentifier") {
             const name = attr.name.name;
-            NamespaceList.forEach(namespace => {
-                if (TargetTable[name]) {
-                    attr.name = jsxIdentifier(TargetTable[name]);
-                } else if (name.startsWith(namespace)) {
-                    const raw_target = name.substr(namespace.length);
-                    const target = TargetTable[raw_target] || raw_target.toLowerCase();
-                    attr.name = jsxNamespacedName(jsxIdentifier(namespace), jsxIdentifier(target));
-                }
-            });
+            if (["transition", "in", "out", "localTransition"].includes(name)) {
+                const value = attr.value as JSXExpressionContainer;
+                const config = value.expression as CallExpression;
+
+                // use compact to avoid \n in params after ToString
+                const args = config.arguments.map(arg => ToString(arg, { compact: true }));
+                const [transition_function, transition_params] = args;
+
+                // use VerticalBar and replace it with | latter because | is invalid in JSX
+                let namespace = name === "localTransition" ? `transition` : name;
+                let function_name = name === "localTransition" ? `${transition_function}${VerticalBar}local` : transition_function;
+                attr.name = jsxNamespacedName(jsxIdentifier(namespace), jsxIdentifier(function_name));
+                attr.value = transition_params ? stringLiteral(`{${transition_params}}`) : null;
+            } else {
+                NamespaceList.forEach(namespace => {
+                    if (TargetTable[name]) {
+                        attr.name = jsxIdentifier(TargetTable[name]);
+                    } else if (name.startsWith(namespace)) {
+                        const raw_target = name.substr(namespace.length);
+                        const target = TargetTable[raw_target] || raw_target.toLowerCase();
+                        attr.name = jsxNamespacedName(jsxIdentifier(namespace), jsxIdentifier(target));
+                    }
+                });
+            }
         }
     });
 }
@@ -68,7 +87,12 @@ function HandleOpeningElement(tag_name: string) {
 
 ```typescript
 function HandleDefault(e: NodePath<JSXOpeningElement>, Append: (value: string) => void) {
-    Append(ToString(e.node));
+    //
+    let element = ToString(e.node);
+
+    // handle |
+    element = element.replace(VerticalBar, "|");
+    Append(element);
 }
 ```
 
@@ -114,7 +138,7 @@ function HandleEach(e: NodePath<JSXOpeningElement>, Append: (value: string) => v
 
     // if we specify value, key only, key info is stored in index
     const item_part = `#each ${data} as ${value || "__invalid value__"}`;
-    const index_part = index ? (index.is_key ? ` (${index.key_name})}` : `, ${index}`) : "";
+    const index_part = index ? (index.is_key ? ` (${index.key_name})` : `, ${index}`) : "";
     const key_part = key ? ` (${key.key_name})` : "";
     const each = `{${item_part}${index_part}${key_part}}`;
     Append(each);

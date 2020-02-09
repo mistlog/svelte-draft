@@ -5,6 +5,34 @@ exports[`translate template section extrat template from code 1`] = `
 "
 `;
 
+exports[`translate template section handle local transition 1`] = `
+"<div transition:slide|local>
+  {item}
+</div>
+"
+`;
+
+exports[`translate template section handle transition 1`] = `
+"<p transition:fade=\\"{{y:200,duration:2000}}\\">
+  Fades in and out
+</p>
+"
+`;
+
+exports[`translate template section handle transition: in and out 1`] = `
+"<p in:fly out:fade=\\"{{y:200,duration:2000}}\\">
+  Fades in and out
+</p>
+"
+`;
+
+exports[`translate template section handle transition: without params 1`] = `
+"<p transition:fade>
+  Fades in and out
+</p>
+"
+`;
+
 exports[`translate template section translate await 1`] = `
 "{#await promise}
 <div>...waiting</div>
@@ -74,7 +102,7 @@ exports[`translate template section translate each with value and index 1`] = `
 
 exports[`translate template section translate each with value and key 1`] = `
 "<ul>
-  {#each cats as cat (cat.id)}}
+  {#each cats as cat (cat.id)}
   <li>
     <a target=\\"_blank\\">
       {index + 1}: {cat.name}
