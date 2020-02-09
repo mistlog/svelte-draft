@@ -43,10 +43,10 @@ function HandleAttributes(e: NodePath<JSXOpeningElement>)
         {
             const name = attr.name.name;
 
-            if (["transition", "in", "out", "localTransition"].includes(name))
+            if (["transition", "in", "out", "localTransition","animate"].includes(name))
             {
                 //@ts-ignore
-                <HandleTransition />;
+                <HandleTransitionAndAnimation />;
             }
             else
             {
@@ -57,7 +57,7 @@ function HandleAttributes(e: NodePath<JSXOpeningElement>)
     })
 }
 
-function HandleTransition(attr: JSXAttribute)
+function HandleTransitionAndAnimation(attr: JSXAttribute)
 {
     const value = attr.value as JSXExpressionContainer;
     const config = value.expression as CallExpression;

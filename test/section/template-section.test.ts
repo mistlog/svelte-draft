@@ -289,6 +289,20 @@ describe("translate template section", () =>
         SnapshotTest(code);
     })
 
+    test("handle animation", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <div animate={ConfigTransition(slide)}>
+                    {item}
+                </div>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
     
 })
 

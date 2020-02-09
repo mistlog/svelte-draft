@@ -5,6 +5,13 @@ exports[`translate template section extrat template from code 1`] = `
 "
 `;
 
+exports[`translate template section handle animation 1`] = `
+"<div animate:slide>
+  {item}
+</div>
+"
+`;
+
 exports[`translate template section handle local transition 1`] = `
 "<div transition:slide|local>
   {item}

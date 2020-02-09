@@ -35,8 +35,8 @@ function HandleAttributes(e: NodePath<JSXOpeningElement>) {
     e.node.attributes.forEach(attr => {
         if (attr.type === "JSXAttribute" && attr.name.type === "JSXIdentifier") {
             const name = attr.name.name;
-            if (["transition", "in", "out", "localTransition"].includes(name)) {
-                <HandleTransition />;
+            if (["transition", "in", "out", "localTransition", "animate"].includes(name)) {
+                <HandleTransitionAndAnimation />;
             } else {
                 <HandleNamespace />;
             }
@@ -46,7 +46,7 @@ function HandleAttributes(e: NodePath<JSXOpeningElement>) {
 ```
 
 ```typescript
-function HandleTransition(attr: JSXAttribute) {
+function HandleTransitionAndAnimation(attr: JSXAttribute) {
     const value = attr.value as JSXExpressionContainer;
     const config = value.expression as CallExpression;
 
