@@ -12,6 +12,17 @@ exports[`translate template section handle animation 1`] = `
 "
 `;
 
+exports[`translate template section handle custom event 1`] = `
+"<div
+  on:panstart=\\"{handlePanStart}\\"
+  on:panmove=\\"{handlePanMove}\\"
+  on:panend=\\"{handlePanEnd}\\"
+>
+  {item}
+</div>
+"
+`;
+
 exports[`translate template section handle local transition 1`] = `
 "<div transition:slide|local>
   {item}
@@ -37,6 +48,13 @@ exports[`translate template section handle transition: without params 1`] = `
 "<p transition:fade>
   Fades in and out
 </p>
+"
+`;
+
+exports[`translate template section handle use directive 1`] = `
+"<div use:pannable>
+  {item}
+</div>
 "
 `;
 

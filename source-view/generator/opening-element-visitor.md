@@ -1,8 +1,4 @@
 ```typescript
-const VerticalBar = "$VERTICAL_BAR$";
-```
-
-```typescript
 export class OpeningElementVisitor {}
 ```
 
@@ -31,12 +27,37 @@ const NamespaceList = ["on", "bind"];
 ```
 
 ```typescript
+const DirectiveSet = new Set(["transition", "in", "out", "localTransition", "animate", "use"]);
+```
+
+```typescript
 function HandleAttributes(e: NodePath<JSXOpeningElement>) {
+    e.node.attributes = e.node.attributes.reduce((container, attr) => {
+        if (attr.type === "JSXAttribute" && attr.name.type === "JSXIdentifier" && attr.name.name === "on") {
+            const value = attr.value as JSXExpressionContainer;
+            const config = value.expression as CallExpression;
+            const [event_config] = config.arguments as [ObjectExpression];
+            const properties = event_config.properties as Array<ObjectProperty>;
+            properties.forEach(each => {
+                //
+                const event_name: string = (each.key as Identifier).name;
+                const handler_name: string = (each.value as Identifier).name;
+
+                //
+                const name = jsxIdentifier(`on${event_name}`);
+                const value = jsxExpressionContainer(identifier(handler_name));
+                container.push(jsxAttribute(name, value));
+            });
+        } else {
+            container.push(attr);
+        }
+        return container;
+    }, []);
     e.node.attributes.forEach(attr => {
         if (attr.type === "JSXAttribute" && attr.name.type === "JSXIdentifier") {
             const name = attr.name.name;
-            if (["transition", "in", "out", "localTransition", "animate"].includes(name)) {
-                <HandleTransitionAndAnimation />;
+            if (DirectiveSet.has(name)) {
+                <HandleDirective />;
             } else {
                 <HandleNamespace />;
             }
@@ -46,7 +67,11 @@ function HandleAttributes(e: NodePath<JSXOpeningElement>) {
 ```
 
 ```typescript
-function HandleTransitionAndAnimation(attr: JSXAttribute) {
+const VerticalBar = "$VERTICAL_BAR$";
+```
+
+```typescript
+function HandleDirective(attr: JSXAttribute) {
     const value = attr.value as JSXExpressionContainer;
     const config = value.expression as CallExpression;
 

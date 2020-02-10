@@ -303,6 +303,38 @@ describe("translate template section", () =>
         SnapshotTest(code);
     })
 
+    test("handle use directive", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <div use={ConfigAction(pannable)}>
+                    {item}
+                </div>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("handle custom event", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <div on={ConfigEvent<IPannableEventMap>({
+                    panstart: handlePanStart,
+                    panmove: handlePanMove,
+                    panend: handlePanEnd
+                })}>
+                    {item}
+                </div>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
     
 })
 

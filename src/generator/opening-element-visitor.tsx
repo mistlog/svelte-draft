@@ -1,9 +1,7 @@
 import { IGenerator } from "./generator";
 import { NodePath } from "@babel/core";
-import { stringLiteral, CallExpression, ObjectProperty, JSXOpeningElement, jsxNamespacedName, jsxIdentifier, JSXAttribute, JSXElement, JSXExpressionContainer } from "@babel/types";
+import { identifier, jsxExpressionContainer, jsxAttribute, Identifier, ObjectExpression, stringLiteral, CallExpression, ObjectProperty, JSXOpeningElement, jsxNamespacedName, jsxIdentifier, JSXAttribute, JSXElement, JSXExpressionContainer } from "@babel/types";
 import { ToString } from "typedraft";
-
-const VerticalBar = "$VERTICAL_BAR$";
 
 export class OpeningElementVisitor { }
 
@@ -35,29 +33,63 @@ const NamespaceList = [
     "on", "bind"
 ]
 
+const DirectiveSet = new Set([
+    "transition", "in", "out", "localTransition", "animate", "use"
+])
+
 function HandleAttributes(e: NodePath<JSXOpeningElement>)
 {
+    e.node.attributes = e.node.attributes.reduce((container, attr) =>
+    {
+        if (attr.type === "JSXAttribute" && attr.name.type === "JSXIdentifier" && attr.name.name === "on")
+        {
+            const value = attr.value as JSXExpressionContainer;
+            const config = value.expression as CallExpression;
+            const [event_config] = config.arguments as [ObjectExpression];
+            const properties = event_config.properties as Array<ObjectProperty>;
+            properties.forEach(each =>
+            {
+                //
+                const event_name: string = (each.key as Identifier).name;
+                const handler_name: string = (each.value as Identifier).name;
+                
+                //
+                const name = jsxIdentifier(`on${event_name}`);
+                const value = jsxExpressionContainer(identifier(handler_name));
+                container.push(jsxAttribute(name, value))
+            });
+        }
+        else
+        {
+            container.push(attr);
+        }
+
+        return container;
+    }, []);
+
     e.node.attributes.forEach(attr =>
     {
         if (attr.type === "JSXAttribute" && attr.name.type === "JSXIdentifier")
         {
             const name = attr.name.name;
 
-            if (["transition", "in", "out", "localTransition","animate"].includes(name))
+            if (DirectiveSet.has(name))
             {
                 //@ts-ignore
-                <HandleTransitionAndAnimation />;
+                <HandleDirective />;
             }
             else
             {
                 //@ts-ignore
-                <HandleNamespace/>;
+                <HandleNamespace />;
             }
         }
     })
 }
 
-function HandleTransitionAndAnimation(attr: JSXAttribute)
+const VerticalBar = "$VERTICAL_BAR$";
+
+function HandleDirective(attr: JSXAttribute)
 {
     const value = attr.value as JSXExpressionContainer;
     const config = value.expression as CallExpression;
