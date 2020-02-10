@@ -39,33 +39,8 @@ const DirectiveSet = new Set([
 
 function HandleAttributes(e: NodePath<JSXOpeningElement>)
 {
-    e.node.attributes = e.node.attributes.reduce((container, attr) =>
-    {
-        if (attr.type === "JSXAttribute" && attr.name.type === "JSXIdentifier" && attr.name.name === "on")
-        {
-            const value = attr.value as JSXExpressionContainer;
-            const config = value.expression as CallExpression;
-            const [event_config] = config.arguments as [ObjectExpression];
-            const properties = event_config.properties as Array<ObjectProperty>;
-            properties.forEach(each =>
-            {
-                //
-                const event_name: string = (each.key as Identifier).name;
-                const handler_name: string = (each.value as Identifier).name;
-                
-                //
-                const name = jsxIdentifier(`on${event_name}`);
-                const value = jsxExpressionContainer(identifier(handler_name));
-                container.push(jsxAttribute(name, value))
-            });
-        }
-        else
-        {
-            container.push(attr);
-        }
-
-        return container;
-    }, []);
+    //@ts-ignore
+    <PreprocessAttributes />;
 
     e.node.attributes.forEach(attr =>
     {
@@ -85,6 +60,37 @@ function HandleAttributes(e: NodePath<JSXOpeningElement>)
             }
         }
     })
+}
+
+function PreprocessAttributes(e: NodePath<JSXOpeningElement>)
+{
+    e.node.attributes = e.node.attributes.reduce((container, attr) =>
+    {
+        if (attr.type === "JSXAttribute" && attr.name.type === "JSXIdentifier" && attr.name.name === "on")
+        {
+            const value = attr.value as JSXExpressionContainer;
+            const config = value.expression as CallExpression;
+            const [event_config] = config.arguments as [ObjectExpression];
+            const properties = event_config.properties as Array<ObjectProperty>;
+            properties.forEach(each =>
+            {
+                //
+                const event_name: string = (each.key as Identifier).name;
+                const handler_name: string = (each.value as Identifier).name;
+
+                //
+                const name = jsxIdentifier(`on${event_name}`);
+                const value = jsxExpressionContainer(identifier(handler_name));
+                container.push(jsxAttribute(name, value))
+            });
+        }
+        else
+        {
+            container.push(attr);
+        }
+
+        return container;
+    }, []);
 }
 
 const VerticalBar = "$VERTICAL_BAR$";

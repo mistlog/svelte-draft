@@ -32,6 +32,22 @@ const DirectiveSet = new Set(["transition", "in", "out", "localTransition", "ani
 
 ```typescript
 function HandleAttributes(e: NodePath<JSXOpeningElement>) {
+    <PreprocessAttributes />;
+    e.node.attributes.forEach(attr => {
+        if (attr.type === "JSXAttribute" && attr.name.type === "JSXIdentifier") {
+            const name = attr.name.name;
+            if (DirectiveSet.has(name)) {
+                <HandleDirective />;
+            } else {
+                <HandleNamespace />;
+            }
+        }
+    });
+}
+```
+
+```typescript
+function PreprocessAttributes(e: NodePath<JSXOpeningElement>) {
     e.node.attributes = e.node.attributes.reduce((container, attr) => {
         if (attr.type === "JSXAttribute" && attr.name.type === "JSXIdentifier" && attr.name.name === "on") {
             const value = attr.value as JSXExpressionContainer;
@@ -53,16 +69,6 @@ function HandleAttributes(e: NodePath<JSXOpeningElement>) {
         }
         return container;
     }, []);
-    e.node.attributes.forEach(attr => {
-        if (attr.type === "JSXAttribute" && attr.name.type === "JSXIdentifier") {
-            const name = attr.name.name;
-            if (DirectiveSet.has(name)) {
-                <HandleDirective />;
-            } else {
-                <HandleNamespace />;
-            }
-        }
-    });
 }
 ```
 
