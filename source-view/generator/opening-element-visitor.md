@@ -57,11 +57,11 @@ function PreprocessAttributes(e: NodePath<JSXOpeningElement>) {
             properties.forEach(each => {
                 //
                 const event_name: string = (each.key as Identifier).name;
-                const handler_name: string = (each.value as Identifier).name;
+                const handler: string = ToString(each.value);
 
                 //
                 const name = jsxIdentifier(`on${event_name}`);
-                const value = jsxExpressionContainer(identifier(handler_name));
+                const value = stringLiteral(`{${handler}}`);
                 container.push(jsxAttribute(name, value));
             });
         } else {

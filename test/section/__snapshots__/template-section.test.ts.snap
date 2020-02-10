@@ -16,7 +16,7 @@ exports[`translate template section handle custom event 1`] = `
 "<div
   on:panstart=\\"{handlePanStart}\\"
   on:panmove=\\"{handlePanMove}\\"
-  on:panend=\\"{handlePanEnd}\\"
+  on:panend=\\"{() => {}}\\"
 >
   {item}
 </div>

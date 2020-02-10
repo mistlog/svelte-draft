@@ -1,7 +1,7 @@
 import { IGenerator } from "./generator";
 import { NodePath } from "@babel/core";
 import { identifier, jsxExpressionContainer, jsxAttribute, Identifier, ObjectExpression, stringLiteral, CallExpression, ObjectProperty, JSXOpeningElement, jsxNamespacedName, jsxIdentifier, JSXAttribute, JSXElement, JSXExpressionContainer } from "@babel/types";
-import { ToString } from "typedraft";
+import { ToString, ToAst } from "typedraft";
 
 export class OpeningElementVisitor { }
 
@@ -76,12 +76,12 @@ function PreprocessAttributes(e: NodePath<JSXOpeningElement>)
             {
                 //
                 const event_name: string = (each.key as Identifier).name;
-                const handler_name: string = (each.value as Identifier).name;
+                const handler: string = ToString(each.value);
 
                 //
                 const name = jsxIdentifier(`on${event_name}`);
-                const value = jsxExpressionContainer(identifier(handler_name));
-                container.push(jsxAttribute(name, value))
+                const value = stringLiteral(`{${handler}}`);
+                container.push(jsxAttribute(name, value));
             });
         }
         else

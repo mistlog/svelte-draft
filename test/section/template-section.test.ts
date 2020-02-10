@@ -325,7 +325,7 @@ describe("translate template section", () =>
                 <div on={ConfigEvent<IPannableEventMap>({
                     panstart: handlePanStart,
                     panmove: handlePanMove,
-                    panend: handlePanEnd
+                    panend: () => {}
                 })}>
                     {item}
                 </div>
