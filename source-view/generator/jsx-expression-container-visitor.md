@@ -105,6 +105,13 @@ function HandleEach(container: NodePath<JSXExpressionContainer>, generator: IGen
 
 ```typescript
 function HandleDefault(container: NodePath<JSXExpressionContainer>, generator: IGenerator) {
-    generator.Append(ToString(container.node));
+    const expression = container.get("expression");
+
+    // use slot props
+    if (expression.isArrowFunctionExpression()) {
+        generator.TraverseTag(expression.get("body") as NodePath<JSXElement>);
+    } else {
+        generator.Append(ToString(container.node));
+    }
 }
 ```

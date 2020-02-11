@@ -5,6 +5,7 @@ export class OpeningElementVisitor {}
 ```typescript
 <OpeningElementVisitor /> +
     function Visit(e: NodePath<JSXOpeningElement>, generator: IGenerator) {
+        <HandleSlotProps />;
         <HandleAttributes />;
 
         //
@@ -49,19 +50,20 @@ function HandleAttributes(e: NodePath<JSXOpeningElement>) {
 ```typescript
 function PreprocessAttributes(e: NodePath<JSXOpeningElement>) {
     e.node.attributes = e.node.attributes.reduce((container, attr) => {
-        if (attr.type === "JSXAttribute" && attr.name.type === "JSXIdentifier" && attr.name.name === "on") {
+        if (attr.type === "JSXAttribute" && attr.name.type === "JSXIdentifier" && (attr.name.name === "on" || attr.name.name === "props")) {
             const value = attr.value as JSXExpressionContainer;
             const config = value.expression as CallExpression;
             const [event_config] = config.arguments as [ObjectExpression];
             const properties = event_config.properties as Array<ObjectProperty>;
             properties.forEach(each => {
                 //
-                const event_name: string = (each.key as Identifier).name;
-                const handler: string = ToString(each.value);
+                const prop: string = (each.key as Identifier).name;
+                const prop_value: string = ToString(each.value);
 
                 //
-                const name = jsxIdentifier(`on${event_name}`);
-                const value = stringLiteral(`{${handler}}`);
+                const prefix = attr.name.name === "on" ? "on" : "";
+                const name = jsxIdentifier(`${prefix}${prop}`);
+                const value = stringLiteral(`{${prop_value}}`);
                 container.push(jsxAttribute(name, value));
             });
         } else {
@@ -154,6 +156,25 @@ function HandleElse(e: NodePath<JSXOpeningElement>, Append: (value: string) => v
     const condition = raw_condition ? ` if ${ToString((raw_condition.value as JSXExpressionContainer).expression)}` : "";
     const _else = `{:else${condition}}`;
     Append(_else);
+}
+```
+
+```typescript
+function HandleSlotProps(e: NodePath<JSXOpeningElement>) {
+    const slot_props = FindChildJSXExpressionContainer(e)
+        ?.get("expression")
+        ?.get("params")
+        .find(each => each.isObjectPattern()) as NodePath<ObjectPattern>;
+    if (slot_props) {
+        const properties = slot_props.node.properties as Array<ObjectProperty>;
+        properties.forEach(each => {
+            const prop: string = (each.key as Identifier).name;
+            const alias: string = ToString(each.value);
+            const name = jsxNamespacedName(jsxIdentifier("let"), jsxIdentifier(prop));
+            const value = jsxExpressionContainer(identifier(alias));
+            e.node.attributes.push(jsxAttribute(name, value));
+        });
+    }
 }
 ```
 

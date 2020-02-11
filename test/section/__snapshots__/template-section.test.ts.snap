@@ -1,5 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`translate template section define slot props 1`] = `
+"<slot hovering=\\"{hovering}\\"></slot>
+"
+`;
+
 exports[`translate template section extrat template from code 1`] = `
 "<h1>Hello {name.toUpperCase()}!</h1>
 "
@@ -165,4 +170,12 @@ exports[`translate template section translate tag attribute starts with on 1`] =
   Clicked {count} {count === 1 ? 'time' : 'times'}
 </button>
 "
+`;
+
+exports[`translate template section use slot props 1`] = `
+"<Hoverable let:hovering={active}>
+                    <div class={active ? \\"active\\" : \\"\\"}>
+                            <p>Hover over me!</p>
+                        </div>
+                </Hoverable>"
 `;

@@ -335,11 +335,42 @@ describe("translate template section", () =>
         SnapshotTest(code);
     })
 
+    test("define slot props", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <slot props={ConfigProps({hovering:hovering})}></slot>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("use slot props", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <Hoverable>
+                    {({ hovering: active }: ISlotProps) => (
+                        <div class={active ? "active" : ""}>
+                            <p>Hover over me!</p>
+                        </div>
+                    )}
+                </Hoverable>;
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
     
 })
 
 function SnapshotTest(code: string)
 {
     const { template_section } = new SvelteTranscriber(code).TranscribeToSections();
-    expect(FormatTemplate(template_section)).toMatchSnapshot();
+    const formatted = FormatTemplate(template_section);
+    expect(formatted).toMatchSnapshot();
 }
