@@ -90,6 +90,11 @@ exports[`translate template section translate await: then & loading 1`] = `
 "
 `;
 
+exports[`translate template section translate debug tag 1`] = `
+"{@debug user, value}
+"
+`;
+
 exports[`translate template section translate each 1`] = `
 "<h1>Te Famous Cats of YouTube</h1>
 <ul>

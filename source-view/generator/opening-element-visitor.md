@@ -112,6 +112,9 @@ function HandleNamespace(attr: JSXAttribute, name: string) {
 ```typescript
 function HandleOpeningElement(tag_name: string) {
     "use match";
+    (tag_name: "debug") => {
+        <HandleDebug />;
+    };
     (tag_name: "if") => {
         <HandleIf />;
     };
@@ -138,6 +141,12 @@ function HandleDefault(e: NodePath<JSXOpeningElement>, Append: (value: string) =
     // handle |
     element = element.replace(VerticalBar, "|");
     Append(element);
+}
+```
+
+```typescript
+function HandleDebug(Append: (value: string) => void) {
+    Append(`{@debug `);
 }
 ```
 

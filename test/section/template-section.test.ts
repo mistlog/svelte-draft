@@ -365,6 +365,18 @@ describe("translate template section", () =>
         SnapshotTest(code);
     })
 
+    test("translate debug tag", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <debug>{[user, value]}</debug>;
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
     
 })
 

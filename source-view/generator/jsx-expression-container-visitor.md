@@ -27,6 +27,9 @@ function HandleContainer(tag_name: string) {
     (tag_name: "await") => {
         <HandleAwait />;
     };
+    (tag_name: "debug") => {
+        <HandleDebug />;
+    };
     () => {
         <HandleDefault />;
     };
@@ -34,7 +37,15 @@ function HandleContainer(tag_name: string) {
 ```
 
 ```typescript
-function HandleAwait(container: NodePath<JSXExpressionContainer>, generator: IGenerator) {
+function HandleDebug(container: NodePath<JSXExpressionContainer>, generator: IGenerator) {
+    const to_debug = (container.get("expression") as NodePath<ArrayExpression>).get("elements");
+    const variable_list = to_debug.map(each => ToString(each.node)).join(", ");
+    generator.Append(variable_list);
+}
+```
+
+```typescript
+function HandleAwait(container: NodePath<JSXExpressionContainer>) {
     //
     const info = container.get("expression");
     if (!info.isObjectExpression()) return;

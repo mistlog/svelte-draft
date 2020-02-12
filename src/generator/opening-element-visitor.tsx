@@ -140,6 +140,9 @@ function HandleOpeningElement(tag_name: string)
     "use match";
 
     //@ts-ignore
+    (tag_name: "debug") => { <HandleDebug /> }
+
+    //@ts-ignore
     (tag_name: "if") => { <HandleIf /> }
 
     //@ts-ignore
@@ -163,6 +166,11 @@ function HandleDefault(e: NodePath<JSXOpeningElement>, Append: (value: string) =
     // handle |
     element = element.replace(VerticalBar, "|");
     Append(element);
+}
+
+function HandleDebug(Append: (value: string) => void)
+{
+    Append(`{@debug `);
 }
 
 function HandleIf(e: NodePath<JSXOpeningElement>, Append: (value: string) => void)
