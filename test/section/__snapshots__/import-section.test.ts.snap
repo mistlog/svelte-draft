@@ -6,3 +6,5 @@ import { count as $count } from \\"./store.js\\";"
 `;
 
 exports[`translate import section remove ts related import 1`] = `"import { Test } from \\"./Nested.svelte\\";"`;
+
+exports[`translate import section remove ts related import 2`] = `"import { count } from \\"./store.js\\";"`;

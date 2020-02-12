@@ -231,10 +231,158 @@ describe("translate template section", () =>
 
         SnapshotTest(code);
     })
+
+    test("handle transition", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <p transition={TransitionConfig(fade,{ y: 200, duration: 2000 })}>
+                    Fades in and out
+	            </p>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("handle transition: without params", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <p transition={TransitionConfig(fade)}>
+                    Fades in and out
+	            </p>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("handle transition: in and out", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <p in={TransitionConfig(fly)} out={TransitionConfig(fade,{ y: 200, duration: 2000 })}>
+                    Fades in and out
+	            </p>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("handle local transition", () =>
+    {
+        // config function name doesn't matter
+        const code = `
+            export default function App()
+            {
+                <div localTransition={ConfigTransition(slide)}>
+                    {item}
+                </div>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("handle animation", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <div animate={ConfigTransition(slide)}>
+                    {item}
+                </div>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("handle use directive", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <div use={ConfigAction(pannable)}>
+                    {item}
+                </div>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("handle custom event", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <div on={ConfigEvent<IPannableEventMap>({
+                    panstart: handlePanStart,
+                    panmove: handlePanMove,
+                    panend: () => {}
+                })}>
+                    {item}
+                </div>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("define slot props", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <slot props={ConfigProps({hovering:hovering})}></slot>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("use slot props", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <Hoverable>
+                    {({ hovering: active }: ISlotProps) => (
+                        <div class={active ? "active" : ""}>
+                            <p>Hover over me!</p>
+                        </div>
+                    )}
+                </Hoverable>;
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("translate debug tag", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                <debug>{[user, value]}</debug>;
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    
 })
 
 function SnapshotTest(code: string)
 {
     const { template_section } = new SvelteTranscriber(code).TranscribeToSections();
-    expect(FormatTemplate(template_section)).toMatchSnapshot();
+    const formatted = FormatTemplate(template_section);
+    expect(formatted).toMatchSnapshot();
 }

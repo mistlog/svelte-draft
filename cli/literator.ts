@@ -82,7 +82,7 @@ export function CrossoutDirectory(path: string)
     {
         if (absolute.endsWith(".tsx"))
         {
-            removeSync(absolute.replace(".tsx", ".svelte"));
+            removeSync(absolute.replace(".tsx", ""));
         }
     })
 }

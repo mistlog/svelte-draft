@@ -44,6 +44,19 @@ describe("translate script section", () =>
         SnapshotTest(code);
     })
 
+    test("ignore variable declaration starts with $", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                let greeting = 'hello';
+                let $name = 'world';
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
 
 })
 

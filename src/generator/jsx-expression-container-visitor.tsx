@@ -1,6 +1,6 @@
 import { IGenerator } from "./generator";
 import { NodePath } from "@babel/core";
-import { ObjectProperty, CallExpression, MemberExpression, ArrowFunctionExpression, JSXAttribute, JSXElement, JSXExpressionContainer } from "@babel/types";
+import { ArrayExpression ,ObjectProperty, CallExpression, MemberExpression, ArrowFunctionExpression, JSXAttribute, JSXElement, JSXExpressionContainer } from "@babel/types";
 import { ToString } from "typedraft";
 
 export class JSXExpressionContainerVisitor { }
@@ -31,10 +31,21 @@ function HandleContainer(tag_name: string)
     (tag_name: "await") => { <HandleAwait /> }
 
     //@ts-ignore
+    (tag_name: "debug") => { <HandleDebug /> }
+
+    //@ts-ignore
     () => { <HandleDefault /> }
 }
 
-function HandleAwait(container: NodePath<JSXExpressionContainer>, generator: IGenerator)
+function HandleDebug(container: NodePath<JSXExpressionContainer>, generator: IGenerator)
+{
+    const to_debug = (container.get("expression") as NodePath<ArrayExpression>).get("elements");
+    const variable_list = to_debug.map(each => ToString(each.node)).join(", ");
+    generator.Append(variable_list);
+}
+
+
+function HandleAwait(container: NodePath<JSXExpressionContainer>)
 {
     //
     const info = container.get("expression");
@@ -109,5 +120,15 @@ function HandleEach(container: NodePath<JSXExpressionContainer>, generator: IGen
 
 function HandleDefault(container: NodePath<JSXExpressionContainer>, generator: IGenerator)
 {
-    generator.Append(ToString(container.node));
+    const expression = container.get("expression");
+
+    // use slot props
+    if (expression.isArrowFunctionExpression())
+    {
+        generator.TraverseTag(expression.get("body") as NodePath<JSXElement>);
+    }
+    else
+    {
+        generator.Append(ToString(container.node));
+    }
 }

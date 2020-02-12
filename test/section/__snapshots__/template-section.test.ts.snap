@@ -1,7 +1,65 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`translate template section define slot props 1`] = `
+"<slot hovering=\\"{hovering}\\"></slot>
+"
+`;
+
 exports[`translate template section extrat template from code 1`] = `
 "<h1>Hello {name.toUpperCase()}!</h1>
+"
+`;
+
+exports[`translate template section handle animation 1`] = `
+"<div animate:slide>
+  {item}
+</div>
+"
+`;
+
+exports[`translate template section handle custom event 1`] = `
+"<div
+  on:panstart=\\"{handlePanStart}\\"
+  on:panmove=\\"{handlePanMove}\\"
+  on:panend=\\"{() => {}}\\"
+>
+  {item}
+</div>
+"
+`;
+
+exports[`translate template section handle local transition 1`] = `
+"<div transition:slide|local>
+  {item}
+</div>
+"
+`;
+
+exports[`translate template section handle transition 1`] = `
+"<p transition:fade=\\"{{y:200,duration:2000}}\\">
+  Fades in and out
+</p>
+"
+`;
+
+exports[`translate template section handle transition: in and out 1`] = `
+"<p in:fly out:fade=\\"{{y:200,duration:2000}}\\">
+  Fades in and out
+</p>
+"
+`;
+
+exports[`translate template section handle transition: without params 1`] = `
+"<p transition:fade>
+  Fades in and out
+</p>
+"
+`;
+
+exports[`translate template section handle use directive 1`] = `
+"<div use:pannable>
+  {item}
+</div>
 "
 `;
 
@@ -29,6 +87,11 @@ exports[`translate template section translate await: then & loading 1`] = `
 {:then number}
 <p>The number is {number}</p>
 {/await}
+"
+`;
+
+exports[`translate template section translate debug tag 1`] = `
+"{@debug user, value}
 "
 `;
 
@@ -74,7 +137,7 @@ exports[`translate template section translate each with value and index 1`] = `
 
 exports[`translate template section translate each with value and key 1`] = `
 "<ul>
-  {#each cats as cat (cat.id)}}
+  {#each cats as cat (cat.id)}
   <li>
     <a target=\\"_blank\\">
       {index + 1}: {cat.name}
@@ -112,4 +175,12 @@ exports[`translate template section translate tag attribute starts with on 1`] =
   Clicked {count} {count === 1 ? 'time' : 'times'}
 </button>
 "
+`;
+
+exports[`translate template section use slot props 1`] = `
+"<Hoverable let:hovering={active}>
+                    <div class={active ? \\"active\\" : \\"\\"}>
+                            <p>Hover over me!</p>
+                        </div>
+                </Hoverable>"
 `;
