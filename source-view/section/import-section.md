@@ -4,21 +4,15 @@ export function TranslateImport(statements: Array<NodePath<ImportDeclaration>>) 
     statements.forEach(each => {
         //
         const node = each.node;
-        const cloned = cloneDeep(node);
-        const import_from = cloned.source.value;
+        const import_from = node.source.value;
 
-        // for store auto subscription function AutoSubscribe
+        // for functions such as store auto subscription: AutoSubscribe
 
-        // remove it, because this function will never be called
+        // remove them, because they are just "type provider"
         if (import_from.includes("svelte-types")) {
             return;
         }
-
-        //
-        if (import_from.startsWith(".") || import_from.startsWith("..")) {
-            cloned.source.value = import_from.replace(".tsx", "");
-        }
-        translated.push(cloned);
+        translated.push(node);
     });
     return translated.map(each => `${ToString(each, { comments: false })}`).join("\n");
 }
