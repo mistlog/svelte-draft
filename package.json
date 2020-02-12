@@ -1,6 +1,6 @@
 {
     "name": "svelte-draft",
-    "version": "0.0.5",
+    "version": "0.1.0",
     "description": "Develop svelte app in typedraft",
     "author": "mistlog",
     "license": "MIT",
