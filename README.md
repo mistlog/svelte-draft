@@ -4,7 +4,7 @@ Develop svelte app in typedraft, with possibly complete typescript support.
 
 ## Documentation
 
-The document is matained in [svelte-draft-docs](https://github.com/mistlog/svelte-draft-docs).
+The document is maintained in [svelte-draft-docs](https://github.com/mistlog/svelte-draft-docs).
 
 ## License
 
