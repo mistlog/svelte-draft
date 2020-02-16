@@ -2,13 +2,9 @@
 
 Develop svelte app in typedraft, with possibly complete typescript support.
 
-Currently it's working in progress, reference materials:
+## Documentation
 
-* [starter project](https://github.com/mistlog/svelte-draft-template)
-
-* [TodoMVC implementation](https://github.com/mistlog/svelte-draft-todo-mvc)
-
-* unit test: see all supported features
+The document is matained in [svelte-draft-docs](https://github.com/mistlog/svelte-draft-docs).
 
 ## License
 
