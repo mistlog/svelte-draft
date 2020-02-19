@@ -137,46 +137,48 @@ export function TranscribeTypeDraftSync(source: string)
 
 export async function TranscribeSvelteDraftAsync(source: string)
 {
+    //
     const code = await readFile(source, "utf8");
-    const transcriber = new SvelteTranscriber(code);
-    config.dsls.forEach(dsl => transcriber.AddDSL(dsl.name, dsl.dsl));
-    const { import_section, script_section, template_section } = transcriber.TranscribeToSections();
+    const { import_section, script_section, template_section, module_context } = Transcribe(code);
 
     //
     const style = source.replace(".svelte.tsx", ".css");
     const style_section = await pathExists(style) ? await readFile(style, "utf8") : "";
 
     //
-    const component = [
-        "<script>",
-        import_section,
-        "\n",
-        script_section,
-        "</script>",
-        "\n",
-        template_section,
-        "\n",
-        "<style>",
-        style_section,
-        "</style>"
-    ].join("\n");
-
+    const component = AssembleComponent(import_section, script_section, template_section, style_section, module_context);
     return component;
 }
 
 export function TranscribeSvelteDraftSync(source: string)
 {
+    //
     const code = readFileSync(source, "utf8");
-    const transcriber = new SvelteTranscriber(code);
-    config.dsls.forEach(dsl => transcriber.AddDSL(dsl.name, dsl.dsl));
-    const { import_section, script_section, template_section } = transcriber.TranscribeToSections();
+    const { import_section, script_section, template_section, module_context } = Transcribe(code);
 
     //
     const style = source.replace(".svelte.tsx", ".css");
     const style_section = existsSync(style) ? readFileSync(style, "utf8") : "";
 
     //
+    const component = AssembleComponent(import_section, script_section, template_section, style_section, module_context);
+    return component;
+}
+
+function Transcribe(code: string)
+{
+    const transcriber = new SvelteTranscriber(code);
+    config.dsls.forEach(dsl => transcriber.AddDSL(dsl.name, dsl.dsl));
+    const module_context = transcriber.ExtractModuleContext();
+    const { import_section, script_section, template_section } = transcriber.TranscribeToSections();
+    return { import_section, script_section, template_section, module_context }
+}
+
+function AssembleComponent(import_section: string, script_section: string, template_section: string, style_section: string, module_context: string)
+{
+    const module_context_section = module_context ? `<script context="module">\n${module_context}\n</script>` : "";
     const component = [
+        module_context_section,
         "<script>",
         import_section,
         "\n",
