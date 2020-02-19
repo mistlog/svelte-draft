@@ -18,8 +18,8 @@ describe("translate import section", () =>
             }
         `;
 
-        const { import_section } = new SvelteTranscriber(code).TranscribeToSections();
-        expect(import_section).toMatchSnapshot();
+        SnapshotTest(code);
+
     })
 
     test("remove ts related import", () =>
@@ -34,8 +34,8 @@ describe("translate import section", () =>
             }
         `;
 
-        const { import_section } = new SvelteTranscriber(code).TranscribeToSections();
-        expect(import_section).toMatchSnapshot();
+        SnapshotTest(code);
+
     })
 
     test("remove ts related import", () =>
@@ -50,7 +50,12 @@ describe("translate import section", () =>
             }
         `;
 
-        const { import_section } = new SvelteTranscriber(code).TranscribeToSections();
-        expect(import_section).toMatchSnapshot();
+        SnapshotTest(code);
     })
 })
+
+function SnapshotTest(code: string)
+{
+    const { import_section } = new SvelteTranscriber(code).TranscribeToSections();
+    expect(import_section).toMatchSnapshot();
+}
