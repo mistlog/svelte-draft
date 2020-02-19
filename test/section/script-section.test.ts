@@ -178,6 +178,24 @@ describe("module context", () =>
 
         SnapshotTestModuleContext(code);
     })
+
+    test("extract module context: with import", () =>
+    {
+        const code = `
+            import sum from "./sum.js";
+            import greeting from "./greeting.js";
+            
+            console.log(sum());
+            
+            export default function AudioPlayer()
+            {
+                console.log(greeting());
+            }
+        `;
+
+        SnapshotTestModuleContext(code);
+
+    })
 })
 
 function SnapshotTest(code: string)

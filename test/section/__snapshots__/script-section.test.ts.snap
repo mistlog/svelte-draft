@@ -14,6 +14,11 @@ export function stopAll() {
 
 exports[`module context extract module context: module context is empty 1`] = `""`;
 
+exports[`module context extract module context: with import 1`] = `
+"import sum from \\"./sum.js\\";
+console.log(sum());"
+`;
+
 exports[`translate props get props on demand 1`] = `
 "export let answer = 42;
 export let question;"

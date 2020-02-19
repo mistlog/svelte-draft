@@ -29,7 +29,7 @@ export class SvelteTranscriber extends Transcriber
 <SvelteTranscriber /> + function ExtractModuleContext(this: SvelteTranscriber & ISvelteTranscriber)
 {
     const statements = this.m_Path.get("body")
-        .filter(each => !each.isExportDefaultDeclaration() && !each.isImportDeclaration() && !IsLocalContext(each))
+        .filter(each => !each.isExportDefaultDeclaration() && !IsLocalContext(each))
         .map(each => each.node);
 
     if (statements.length === 0)
