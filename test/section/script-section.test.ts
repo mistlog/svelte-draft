@@ -128,8 +128,66 @@ describe("translate props", () =>
     })
 })
 
+describe("module context", () =>
+{
+    test("extract module context", () =>
+    {
+        const code = `
+            const elements = new Set();
+
+            // result should be js code
+            const a : number = 1;
+            
+            export function stopAll() {
+                elements.forEach(element => {
+                    element.pause();
+                });
+            }
+            
+            export default function AudioPlayer()
+            {
+                <LocalContext/>;
+                console.log("in component");
+            }
+
+            // local context is not included
+            function LocalContext()
+            {
+                console.log("in local context")
+            }
+        `;
+
+        SnapshotTestModuleContext(code);
+
+    })
+
+    test("extract module context: module context is empty", () =>
+    {
+        const code = `
+            export default function AudioPlayer()
+            {
+                <LocalContext/>;
+                console.log("in component");
+            }
+
+            function LocalContext()
+            {
+                console.log("in local context")
+            }
+        `;
+
+        SnapshotTestModuleContext(code);
+    })
+})
+
 function SnapshotTest(code: string)
 {
     const { script_section } = new SvelteTranscriber(code).TranscribeToSections();
     expect(script_section).toMatchSnapshot();
+}
+
+function SnapshotTestModuleContext(code: string)
+{
+    const module_context = new SvelteTranscriber(code).ExtractModuleContext();
+    expect(module_context).toMatchSnapshot();
 }

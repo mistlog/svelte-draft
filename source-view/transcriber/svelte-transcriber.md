@@ -19,6 +19,25 @@ export class SvelteTranscriber extends Transcriber {
 
 ```typescript
 <SvelteTranscriber /> +
+    function ExtractModuleContext(this: SvelteTranscriber & ISvelteTranscriber) {
+        const statements = this.m_Path
+            .get("body")
+            .filter(each => !each.isExportDefaultDeclaration() && !each.isImportDeclaration() && !IsLocalContext(each))
+            .map(each => each.node);
+        if (statements.length === 0) {
+            return "";
+        }
+        const module_context_ts = statements.map(each => ToString(each)).join("\n");
+        const module_context_js = transformSync(module_context_ts, { filename: "script.tsx", ast: true, presets: [[TypescriptPreset, { jsxPragma: "preserve", isTSX: true, allExtensions: true }]] })
+            .code;
+        return module_context_js;
+    };
+```
+
+@ts-ignore
+
+```typescript
+<SvelteTranscriber /> +
     function TranscribeToSections(this: SvelteTranscriber & ISvelteTranscriber) {
         // to js
         const component = this.Transcribe();
@@ -50,7 +69,7 @@ export function FindAllImport(program: NodePath<Program>) {
 ```typescript
 export function FindComponentBody(program: NodePath<Program>) {
     const statements: Array<NodePath<Statement>> = program.get("body").filter(each => !IsTemplate(each));
-    const component = statements.find(each => each.isExportDeclaration()) as NodePath<ExportDefaultDeclaration>;
+    const component = statements.find(each => each.isExportDefaultDeclaration()) as NodePath<ExportDefaultDeclaration>;
     const body = component.get("declaration").get("body") as NodePath<BlockStatement>;
     return body;
 }

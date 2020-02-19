@@ -7,6 +7,7 @@ import { TranslateScript } from "../section/script-section";
 import { TranslateTemplate, IsTemplate } from "../section/template-section";
 import { TranslateImport } from "../section/import-section";
 import { SvelteWatch } from "../dsl/draft-dsl-svelte-watch";
+import { ToString, IsLocalContext } from "typedraft";
 import * as TypescriptPreset from "@babel/preset-typescript";
 
 export interface ISvelteTranscriber extends ITranscriber
@@ -23,6 +24,30 @@ export class SvelteTranscriber extends Transcriber
 
     get m_Path() { return this.m_Module.m_Path; }
 }
+
+//@ts-ignore
+<SvelteTranscriber /> + function ExtractModuleContext(this: SvelteTranscriber & ISvelteTranscriber)
+{
+    const statements = this.m_Path.get("body")
+        .filter(each => !each.isExportDefaultDeclaration() && !each.isImportDeclaration() && !IsLocalContext(each))
+        .map(each => each.node);
+
+    if (statements.length === 0)
+    {
+        return "";
+    }
+
+    const module_context_ts = statements.map(each => ToString(each))
+        .join("\n");
+
+    const module_context_js = transformSync(module_context_ts, {
+        filename: "script.tsx",
+        ast: true,
+        presets: [[TypescriptPreset, { jsxPragma: "preserve", isTSX: true, allExtensions: true }]]
+    }).code;
+
+    return module_context_js;
+};
 
 //@ts-ignore
 <SvelteTranscriber /> + function TranscribeToSections(this: SvelteTranscriber & ISvelteTranscriber)
@@ -67,7 +92,7 @@ export function FindAllImport(program: NodePath<Program>)
 export function FindComponentBody(program: NodePath<Program>)
 {
     const statements: Array<NodePath<Statement>> = program.get("body").filter(each => !IsTemplate(each));
-    const component = statements.find(each => each.isExportDeclaration()) as NodePath<ExportDefaultDeclaration>;
+    const component = statements.find(each => each.isExportDefaultDeclaration()) as NodePath<ExportDefaultDeclaration>;
     const body = component.get("declaration").get("body") as NodePath<BlockStatement>;
     return body;
 };

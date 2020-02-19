@@ -1,5 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`module context extract module context 1`] = `
+"const elements = new Set(); // result should be js code
+// result should be js code
+
+const a = 1;
+export function stopAll() {
+  elements.forEach(element => {
+    element.pause();
+  });
+}"
+`;
+
+exports[`module context extract module context: module context is empty 1`] = `""`;
+
 exports[`translate props get props on demand 1`] = `
 "export let answer = 42;
 export let question;"
