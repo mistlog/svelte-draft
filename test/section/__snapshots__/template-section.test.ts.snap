@@ -63,6 +63,11 @@ exports[`translate template section handle use directive 1`] = `
 "
 `;
 
+exports[`translate template section support raw html 1`] = `
+"<p>{@html string}</p>
+"
+`;
+
 exports[`translate template section translate await 1`] = `
 "{#await promise}
 <div>...waiting</div>

@@ -115,6 +115,9 @@ function HandleOpeningElement(tag_name: string) {
     (tag_name: "debug") => {
         <HandleDebug />;
     };
+    (tag_name: "raw-html") => {
+        <HandleRawHTML />;
+    };
     (tag_name: "if") => {
         <HandleIf />;
     };
@@ -147,6 +150,12 @@ function HandleDefault(e: NodePath<JSXOpeningElement>, Append: (value: string) =
 ```typescript
 function HandleDebug(Append: (value: string) => void) {
     Append(`{@debug `);
+}
+```
+
+```typescript
+function HandleRawHTML(Append: (value: string) => void) {
+    Append(`{@html `);
 }
 ```
 

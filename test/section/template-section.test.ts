@@ -377,6 +377,20 @@ describe("translate template section", () =>
         SnapshotTest(code);
     })
 
+    test("support raw html", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                let string = "this string contains some <strong>HTML!!!</strong>";
+
+                <p><raw-html>{string}</raw-html></p>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
     
 })
 
