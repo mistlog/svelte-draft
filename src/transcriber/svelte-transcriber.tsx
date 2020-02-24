@@ -1,7 +1,7 @@
 import traverse, { NodePath } from "@babel/traverse";
 import { ExportDefaultDeclaration, BlockStatement, Statement, Program, ImportDeclaration } from "@babel/types";
 import { transformSync } from "@babel/core";
-import { Transcriber, ITranscriber, DSLPlugin, LocalContextPlugin, ClassPlugin } from "typedraft";
+import { Transcriber, ITranscriber, DSLPlugin, LocalContextPlugin, ClassPlugin, RefreshDraftPlugin } from "typedraft";
 import { SvelteFilterPlugin } from "../plug-in/draft-plugin-svelte-filter";
 import { TranslateScript } from "../section/script-section";
 import { TranslateTemplate, IsTemplate } from "../section/template-section";
@@ -28,6 +28,8 @@ export class SvelteTranscriber extends Transcriber
 //@ts-ignore
 <SvelteTranscriber /> + function ExtractModuleContext(this: SvelteTranscriber & ISvelteTranscriber)
 {
+    this.RefreshDraft();
+    
     const statements = this.m_Path.get("body")
         .filter(each => !each.isExportDefaultDeclaration() && !IsLocalContext(each))
         .map(each => each.node);
@@ -107,9 +109,11 @@ export function FindComponentBody(program: NodePath<Program>)
 < SvelteTranscriber /> + function PreparePlugins(this: SvelteTranscriber)
 {
     this.m_Plugins = [
+        new RefreshDraftPlugin(this),
         new DSLPlugin(this),
-        new ClassPlugin(this),
+        new RefreshDraftPlugin(this),
         new LocalContextPlugin(this),
+        new ClassPlugin(this),
         new SvelteFilterPlugin(this)
     ]
 }
