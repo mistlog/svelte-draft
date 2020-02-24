@@ -20,6 +20,7 @@ export class SvelteTranscriber extends Transcriber {
 ```typescript
 <SvelteTranscriber /> +
     function ExtractModuleContext(this: SvelteTranscriber & ISvelteTranscriber) {
+        this.RefreshDraft();
         const statements = this.m_Path
             .get("body")
             .filter(each => !each.isExportDefaultDeclaration() && !IsLocalContext(each))
@@ -89,6 +90,6 @@ export function FindComponentBody(program: NodePath<Program>) {
 ```typescript
 <SvelteTranscriber /> +
     function PreparePlugins(this: SvelteTranscriber) {
-        this.m_Plugins = [new DSLPlugin(this), new ClassPlugin(this), new LocalContextPlugin(this), new SvelteFilterPlugin(this)];
+        this.m_Plugins = [new RefreshDraftPlugin(this), new DSLPlugin(this), new RefreshDraftPlugin(this), new LocalContextPlugin(this), new ClassPlugin(this), new SvelteFilterPlugin(this)];
     };
 ```
