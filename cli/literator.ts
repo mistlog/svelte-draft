@@ -89,15 +89,15 @@ export function CrossoutDirectory(path: string)
 
 export function ComposeFile(source: string)
 {
-    if (source.endsWith(".svelte.tsx"))
-    {
-        const component = TranscribeSvelteDraftSync(source);
-        outputFileSync(source.replace(".tsx", ""), component, "utf8");
-    }
-    else if (source.endsWith(".js.tsx"))
+    if (source.endsWith(".js.tsx") || source.endsWith(".ts"))
     {
         const code = TranscribeTypeDraftSync(source);
-        outputFileSync(source.replace(".tsx", ""), code, "utf8");
+        outputFileSync(source.replace(source.endsWith(".js.tsx") ? ".js.tsx" : ".ts", ".js"), code, "utf8");
+    }
+    else if (source.endsWith(".tsx"))
+    {
+        const component = TranscribeSvelteDraftSync(source);
+        outputFileSync(source.replace(".tsx", ".svelte"), component, "utf8");
     }
 }
 
@@ -142,8 +142,8 @@ export async function TranscribeSvelteDraftAsync(source: string)
     const { import_section, script_section, template_section, module_context } = Transcribe(code);
 
     //
-    const style = source.replace(".svelte.tsx", ".css");
-    const style_section = await pathExists(style) ? await readFile(style, "utf8") : "";
+    const style_path = source.replace(".tsx", ".css");
+    const style_section = await pathExists(style_path) ? await readFile(style_path, "utf8") : "";
 
     //
     const component = AssembleComponent(import_section, script_section, template_section, style_section, module_context);
@@ -157,7 +157,7 @@ export function TranscribeSvelteDraftSync(source: string)
     const { import_section, script_section, template_section, module_context } = Transcribe(code);
 
     //
-    const style = source.replace(".svelte.tsx", ".css");
+    const style = source.replace(".tsx", ".css");
     const style_section = existsSync(style) ? readFileSync(style, "utf8") : "";
 
     //
