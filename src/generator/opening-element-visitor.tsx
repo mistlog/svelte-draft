@@ -29,7 +29,8 @@ const TargetTable = {
     "DoubleClick": "dblclick",
     "InnerHTML": "innerHTML",
     "contentEditable": "contenteditable",
-    "Ref": "this"
+    "Ref": "this",
+    "ScrollY": "scrollY"
 }
 
 const NamespaceList = [
