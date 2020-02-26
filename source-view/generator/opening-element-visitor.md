@@ -138,6 +138,12 @@ function HandleOpeningElement(tag_name: string) {
 
 ```typescript
 function HandleDefault(e: NodePath<JSXOpeningElement>, Append: (value: string) => void) {
+    // handle special elements
+    const tag_name = e.get("name");
+    if (tag_name.isJSXIdentifier() && tag_name.node.name.startsWith("svelte")) {
+        tag_name.node.name = (tag_name.node.name as string).replace("-", ":");
+    }
+
     //
     let element = ToString(e.node);
 

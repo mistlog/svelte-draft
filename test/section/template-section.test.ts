@@ -391,6 +391,19 @@ describe("translate template section", () =>
         SnapshotTest(code);
     })
 
+    test("support special elements", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                let file: string;
+                <svelte-self {...file}/>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
     
 })
 
