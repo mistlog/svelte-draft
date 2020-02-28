@@ -25,6 +25,13 @@ function HandleClosingElement(tag_name: string, e: NodePath<JSXClosingElement>, 
     (tag_name: "if" | "each" | "await") => Append(`{/${tag_name}}`);
     (tag_name: "else") => Append("");
     (tag_name: "debug" | "raw-html") => Append("}");
-    () => Append(ToString(e.node));
+    () => {
+        // handle special elements
+        if (tag_name.startsWith("svelte")) {
+            const name = e.get("name") as NodePath<JSXIdentifier>;
+            name.node.name = tag_name.replace("-", ":");
+        }
+        Append(ToString(e.node));
+    };
 }
 ```
