@@ -63,6 +63,22 @@ exports[`translate template section handle use directive 1`] = `
 "
 `;
 
+exports[`translate template section support raw html 1`] = `
+"<p>{@html string}</p>
+"
+`;
+
+exports[`translate template section support special elements 1`] = `
+"<svelte:self {...file} />
+<svelte:head>
+  <link
+    rel=\\"stylesheet\\"
+    href=\\"https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css\\"
+  />
+</svelte:head>
+"
+`;
+
 exports[`translate template section translate await 1`] = `
 "{#await promise}
 <div>...waiting</div>

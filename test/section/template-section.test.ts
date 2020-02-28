@@ -377,6 +377,37 @@ describe("translate template section", () =>
         SnapshotTest(code);
     })
 
+    test("support raw html", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                let string = "this string contains some <strong>HTML!!!</strong>";
+
+                <p><raw-html>{string}</raw-html></p>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
+    test("support special elements", () =>
+    {
+        const code = `
+            export default function App()
+            {
+                let file: string;
+                <svelte-self {...file}/>;
+
+                <svelte-head>
+                    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"/>
+                </svelte-head>
+            }
+        `;
+
+        SnapshotTest(code);
+    })
+
     
 })
 

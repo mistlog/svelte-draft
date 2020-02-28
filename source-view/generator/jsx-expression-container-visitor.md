@@ -30,9 +30,20 @@ function HandleContainer(tag_name: string) {
     (tag_name: "debug") => {
         <HandleDebug />;
     };
+    (tag_name: "raw-html") => {
+        <HandleRawHTML />;
+    };
     () => {
         <HandleDefault />;
     };
+}
+```
+
+```typescript
+function HandleRawHTML(container: NodePath<JSXExpressionContainer>, generator: IGenerator) {
+    // exclude "{" and "}" by using container.expression.node instead of container.node
+    const node = container.get("expression").node;
+    generator.Append(ToString(node));
 }
 ```
 

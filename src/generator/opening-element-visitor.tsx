@@ -29,7 +29,8 @@ const TargetTable = {
     "DoubleClick": "dblclick",
     "InnerHTML": "innerHTML",
     "contentEditable": "contenteditable",
-    "Ref": "this"
+    "Ref": "this",
+    "ScrollY": "scrollY"
 }
 
 const NamespaceList = [
@@ -143,6 +144,9 @@ function HandleOpeningElement(tag_name: string)
     (tag_name: "debug") => { <HandleDebug /> }
 
     //@ts-ignore
+    (tag_name: "raw-html") => { <HandleRawHTML /> }
+
+    //@ts-ignore
     (tag_name: "if") => { <HandleIf /> }
 
     //@ts-ignore
@@ -160,6 +164,13 @@ function HandleOpeningElement(tag_name: string)
 
 function HandleDefault(e: NodePath<JSXOpeningElement>, Append: (value: string) => void)
 {
+    // handle special elements
+    const tag_name = e.get("name");
+    if (tag_name.isJSXIdentifier() && tag_name.node.name.startsWith("svelte"))
+    {
+        tag_name.node.name = (tag_name.node.name as string).replace("-", ":");
+    }
+
     //
     let element = ToString(e.node);
 
@@ -171,6 +182,11 @@ function HandleDefault(e: NodePath<JSXOpeningElement>, Append: (value: string) =
 function HandleDebug(Append: (value: string) => void)
 {
     Append(`{@debug `);
+}
+
+function HandleRawHTML(Append: (value: string) => void)
+{
+    Append(`{@html `);
 }
 
 function HandleIf(e: NodePath<JSXOpeningElement>, Append: (value: string) => void)
