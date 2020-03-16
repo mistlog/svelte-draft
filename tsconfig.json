@@ -9,6 +9,7 @@
     },
     "include": [
         "src/**/*.ts",
-        "cli/**/*.ts"
+        "cli/**/*.ts",
+        "utility/**/*.ts"
     ]
 }
