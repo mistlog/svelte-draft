@@ -1,6 +1,6 @@
 {
     "name": "svelte-draft",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "description": "Develop svelte app in typedraft",
     "author": "mistlog",
     "license": "MIT",
@@ -16,13 +16,10 @@
         "dsl"
     ],
     "bin": {
-        "sd": "dist/cli/cli.js"
+        "sd": "cli/cli.js"
     },
-    "main": "dist/src/index.js",
-    "types": "dist/src/index.d.ts",
-    "files": [
-        "dist"
-    ],
+    "main": "src/index.js",
+    "types": "src/index.d.ts",
     "repository": {
         "type": "git",
         "url": "https://github.com/mistlog/svelte-draft"
@@ -41,6 +38,7 @@
         "transcribe": "td ./src",
         "transcribe:watch": "td ./src -w",
         "release": "npm run build && npm pack",
+        "script:pre-release": "npm run build && ts-node ./script/pre-release && cd ./dist && npm publish",
         "clean:ts": "ts-node ./script/clean-ts.ts",
         "clean:dist": "ts-node ./script/clean-dist.ts"
     },
