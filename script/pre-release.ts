@@ -6,4 +6,4 @@ const dist_root = resolve(__dirname, "../dist");
 
 ["package.json", "README.md", "LICENSE"].forEach(each => {
     copyFileSync(resolve(root, each), resolve(dist_root, each));
-})
+});

@@ -85,7 +85,7 @@ exports[`translate template section translate await 1`] = `
 {:then number}
 <p>The number is {number}</p>
 {:catch error}
-<p style=\\"color: red\\">{error.message}</p>
+<p style=\\"color: red;\\">{error.message}</p>
 {/await}
 "
 `;

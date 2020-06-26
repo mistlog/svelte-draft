@@ -1,7 +1,6 @@
 import * as prettier from "prettier";
 
-export function FormatTemplate(code: string)
-{
+export function FormatTemplate(code: string) {
     try {
         /**
          * prettier bug?: Unexpected closing tag "div"
@@ -9,7 +8,7 @@ export function FormatTemplate(code: string)
          */
         return prettier.format(code, {
             parser: "html",
-            htmlWhitespaceSensitivity: "ignore"
+            htmlWhitespaceSensitivity: "ignore",
         });
     } catch (error) {
         return code;

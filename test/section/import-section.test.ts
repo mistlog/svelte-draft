@@ -1,9 +1,7 @@
 import { SvelteTranscriber } from "../../src";
 
-describe("translate import section", () =>
-{
-    test("extrat import from code", () =>
-    {
+describe("translate import section", () => {
+    test("extrat import from code", () => {
         const code = `
             import Nested from "./Nested.svelte";
             import { count as $count } from "./store.js";
@@ -19,11 +17,9 @@ describe("translate import section", () =>
         `;
 
         SnapshotTest(code);
+    });
 
-    })
-
-    test("remove ts related import", () =>
-    {
+    test("remove ts related import", () => {
         const code = `
             import {ITest, Test} from "./Nested.svelte";
 
@@ -35,11 +31,9 @@ describe("translate import section", () =>
         `;
 
         SnapshotTest(code);
+    });
 
-    })
-
-    test("remove ts related import", () =>
-    {
+    test("remove ts related import", () => {
         const code = `
             import { count } from "./store.js";
             import { AutoSubscribe } from "svelte-types";
@@ -51,11 +45,10 @@ describe("translate import section", () =>
         `;
 
         SnapshotTest(code);
-    })
-})
+    });
+});
 
-function SnapshotTest(code: string)
-{
+function SnapshotTest(code: string) {
     const { import_section } = new SvelteTranscriber(code).TranscribeToSections();
     expect(import_section).toMatchSnapshot();
 }
