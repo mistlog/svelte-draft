@@ -1,10 +1,8 @@
 import { SvelteTranscriber } from "../../src";
 import { FormatTemplate } from "../utility/utility";
 
-describe("translate template section", () =>
-{
-    test("extrat template from code", () =>
-    {
+describe("translate template section", () => {
+    test("extrat template from code", () => {
         const code = `
             export default function App()
             {
@@ -21,11 +19,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
+    });
 
-    })
-
-    test("translate tag attribute starts with on", () =>
-    {
+    test("translate tag attribute starts with on", () => {
         const code = `
             export default function App()
             {
@@ -36,10 +32,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("translate if", () =>
-    {
+    test("translate if", () => {
         const code = `
             export default function App()
             {
@@ -52,10 +47,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("translate else", () =>
-    {
+    test("translate else", () => {
         const code = `
             export default function App()
             {
@@ -74,10 +68,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("translate each", () =>
-    {
+    test("translate each", () => {
         const code = `
             interface ICat
             {
@@ -110,10 +103,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("translate each with value", () =>
-    {
+    test("translate each with value", () => {
         const code = `
             export default function App()
             {
@@ -132,10 +124,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("translate each with value and index", () =>
-    {
+    test("translate each with value and index", () => {
         const code = `
             export default function App()
             {
@@ -154,10 +145,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("translate each with value and key", () =>
-    {
+    test("translate each with value and key", () => {
         const code = `
             export default function App()
             {
@@ -176,10 +166,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("translate await: only then exist", () =>
-    {
+    test("translate await: only then exist", () => {
         const code = `
             export default function App()
             {
@@ -193,10 +182,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("translate await: then & loading", () =>
-    {
+    test("translate await: then & loading", () => {
         const code = `
             export default function App()
             {
@@ -211,10 +199,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("translate await", () =>
-    {
+    test("translate await", () => {
         const code = `
             export default function App()
             {
@@ -230,10 +217,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("handle transition", () =>
-    {
+    test("handle transition", () => {
         const code = `
             export default function App()
             {
@@ -244,10 +230,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("handle transition: without params", () =>
-    {
+    test("handle transition: without params", () => {
         const code = `
             export default function App()
             {
@@ -258,10 +243,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("handle transition: in and out", () =>
-    {
+    test("handle transition: in and out", () => {
         const code = `
             export default function App()
             {
@@ -272,10 +256,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("handle local transition", () =>
-    {
+    test("handle local transition", () => {
         // config function name doesn't matter
         const code = `
             export default function App()
@@ -287,10 +270,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("handle animation", () =>
-    {
+    test("handle animation", () => {
         const code = `
             export default function App()
             {
@@ -301,10 +283,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("handle use directive", () =>
-    {
+    test("handle use directive", () => {
         const code = `
             export default function App()
             {
@@ -315,10 +296,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("handle custom event", () =>
-    {
+    test("handle custom event", () => {
         const code = `
             export default function App()
             {
@@ -333,10 +313,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("define slot props", () =>
-    {
+    test("define slot props", () => {
         const code = `
             export default function App()
             {
@@ -345,10 +324,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("use slot props", () =>
-    {
+    test("use slot props", () => {
         const code = `
             export default function App()
             {
@@ -363,10 +341,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("translate debug tag", () =>
-    {
+    test("translate debug tag", () => {
         const code = `
             export default function App()
             {
@@ -375,10 +352,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("support raw html", () =>
-    {
+    test("support raw html", () => {
         const code = `
             export default function App()
             {
@@ -389,10 +365,9 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("support special elements", () =>
-    {
+    test("support special elements", () => {
         const code = `
             export default function App()
             {
@@ -406,13 +381,10 @@ describe("translate template section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
+});
 
-    
-})
-
-function SnapshotTest(code: string)
-{
+function SnapshotTest(code: string) {
     const { template_section } = new SvelteTranscriber(code).TranscribeToSections();
     const formatted = FormatTemplate(template_section);
     expect(formatted).toMatchSnapshot();

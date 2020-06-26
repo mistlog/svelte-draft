@@ -2,8 +2,7 @@ import { BlockStatement, JSXElement, Statement } from "@babel/types";
 import { NodePath } from "@babel/core";
 import { TagGenerator } from "../generator/generator";
 
-export function TranslateTemplate(body: NodePath<BlockStatement>)
-{
+export function TranslateTemplate(body: NodePath<BlockStatement>) {
     const template: Array<NodePath<JSXElement>> = body
         .get("body")
         .filter(each => IsTemplate(each))
@@ -13,7 +12,6 @@ export function TranslateTemplate(body: NodePath<BlockStatement>)
     return translated.join("\n");
 }
 
-export function IsTemplate(statement: NodePath<Statement>)
-{
-    return statement.isExpressionStatement() && statement.get("expression").isJSXElement()
+export function IsTemplate(statement: NodePath<Statement>) {
+    return statement.isExpressionStatement() && statement.get("expression").isJSXElement();
 }
