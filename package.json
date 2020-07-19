@@ -15,6 +15,9 @@
         "javascript",
         "dsl"
     ],
+    "files": [
+        "dist"
+    ],
     "bin": {
         "sd": "cli/cli.js"
     },
@@ -36,7 +39,6 @@
         "transcribe": "td ./src",
         "transcribe:watch": "td ./src -w",
         "release": "npm run build && npm pack",
-        "script:pre-release": "npm run build && ts-node ./script/pre-release && cd ./dist && npm publish",
         "format": "prettier --write ./src ./test ./script ./utility ./cli",
         "check:format": "prettier --check ./src ./test ./script ./utility ./cli",
         "clean:ts": "ts-node ./script/clean-ts.ts",
