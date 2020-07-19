@@ -33,29 +33,19 @@ function HandleContainer(tag_name: string) {
     "use match";
 
     //@ts-ignore
-    (tag_name: "each") => {
-        <HandleEach />;
-    };
+    (tag_name: "each") => <HandleEach />;
 
     //@ts-ignore
-    (tag_name: "await") => {
-        <HandleAwait />;
-    };
+    (tag_name: "await") => <HandleAwait />;
 
     //@ts-ignore
-    (tag_name: "debug") => {
-        <HandleDebug />;
-    };
+    (tag_name: "debug") => <HandleDebug />;
 
     //@ts-ignore
-    (tag_name: "raw-html") => {
-        <HandleRawHTML />;
-    };
+    (tag_name: "raw-html") => <HandleRawHTML />;
 
     //@ts-ignore
-    () => {
-        <HandleDefault />;
-    };
+    () => <HandleDefault />;
 }
 
 function HandleRawHTML(container: NodePath<JSXExpressionContainer>, generator: IGenerator) {

@@ -30,6 +30,17 @@ export interface ISvelteTranscriber extends ITranscriber {
 export class SvelteTranscriber extends Transcriber {
     constructor(code: string) {
         super(code);
+
+        this.m_DSLMap.set("watch", new SvelteWatch());
+
+        this.m_Plugins = [
+            new RefreshDraftPlugin(this),
+            new DSLPlugin(this),
+            new RefreshDraftPlugin(this),
+            new LocalContextPlugin(this),
+            new ClassPlugin(this),
+            new SvelteFilterPlugin(this),
+        ];
     }
 
     get m_Path() {
@@ -40,7 +51,7 @@ export class SvelteTranscriber extends Transcriber {
 //@ts-ignore
 <SvelteTranscriber /> +
     function ExtractModuleContext(this: SvelteTranscriber & ISvelteTranscriber) {
-        this.RefreshDraft();
+        new RefreshDraftPlugin(this).Transcribe();
 
         const statements = this.m_Path
             .get("body")
@@ -116,22 +127,3 @@ export function FindComponentBody(program: NodePath<Program>) {
     const body = component.get("declaration").get("body") as NodePath<BlockStatement>;
     return body;
 }
-
-//@ts-ignore
-<SvelteTranscriber /> +
-    function PrepareDSLs() {
-        this.m_DSLMap.set("watch", new SvelteWatch());
-    };
-
-//@ts-ignore
-<SvelteTranscriber /> +
-    function PreparePlugins(this: SvelteTranscriber) {
-        this.m_Plugins = [
-            new RefreshDraftPlugin(this),
-            new DSLPlugin(this),
-            new RefreshDraftPlugin(this),
-            new LocalContextPlugin(this),
-            new ClassPlugin(this),
-            new SvelteFilterPlugin(this),
-        ];
-    };
