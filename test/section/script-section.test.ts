@@ -1,9 +1,7 @@
 import { SvelteTranscriber } from "../../src";
 
-describe("translate script section", () =>
-{
-    test("extrat script from code", () =>
-    {
+describe("translate script section", () => {
+    test("extrat script from code", () => {
         const code = `
             export default function App()
             {
@@ -20,10 +18,9 @@ describe("translate script section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("track change", () =>
-    {
+    test("track change", () => {
         const code = `
             export default function App()
             {
@@ -42,10 +39,26 @@ describe("translate script section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("ignore variable declaration starts with $", () =>
-    {
+    test("track change: inline", () => {
+        const code = `
+            export default function App()
+            {
+                let count = 0;
+                let doubled = 0;
+            
+                {
+                    "use watch";
+                    doubled = count * 2;
+                }
+            }
+        `;
+
+        SnapshotTest(code);
+    });
+
+    test("ignore variable declaration starts with $", () => {
         const code = `
             export default function App()
             {
@@ -55,15 +68,11 @@ describe("translate script section", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
+});
 
-
-})
-
-describe("translate props", () =>
-{
-    test("use {} to get props", () =>
-    {
+describe("translate props", () => {
+    test("use {} to get props", () => {
         const code = `
             export interface INestedProps
             {
@@ -80,10 +89,9 @@ describe("translate props", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("handle default prop", () =>
-    {
+    test("handle default prop", () => {
         const code = `
             export interface INestedProps
             {
@@ -99,10 +107,9 @@ describe("translate props", () =>
         `;
 
         SnapshotTest(code);
-    })
+    });
 
-    test("get props on demand", () =>
-    {
+    test("get props on demand", () => {
         const code = `
             export interface INestedProps
             {
@@ -125,13 +132,11 @@ describe("translate props", () =>
         `;
 
         SnapshotTest(code);
-    })
-})
+    });
+});
 
-describe("module context", () =>
-{
-    test("extract module context", () =>
-    {
+describe("module context", () => {
+    test("extract module context", () => {
         const code = `
             const elements = new Set();
 
@@ -158,11 +163,9 @@ describe("module context", () =>
         `;
 
         SnapshotTestModuleContext(code);
+    });
 
-    })
-
-    test("extract module context: module context is empty", () =>
-    {
+    test("extract module context: module context is empty", () => {
         const code = `
             export default function AudioPlayer()
             {
@@ -177,10 +180,9 @@ describe("module context", () =>
         `;
 
         SnapshotTestModuleContext(code);
-    })
+    });
 
-    test("extract module context: with import", () =>
-    {
+    test("extract module context: with import", () => {
         const code = `
             import sum from "./sum.js";
             import greeting from "./greeting.js";
@@ -194,18 +196,15 @@ describe("module context", () =>
         `;
 
         SnapshotTestModuleContext(code);
+    });
+});
 
-    })
-})
-
-function SnapshotTest(code: string)
-{
+function SnapshotTest(code: string) {
     const { script_section } = new SvelteTranscriber(code).TranscribeToSections();
     expect(script_section).toMatchSnapshot();
 }
 
-function SnapshotTestModuleContext(code: string)
-{
+function SnapshotTestModuleContext(code: string) {
     const module_context = new SvelteTranscriber(code).ExtractModuleContext();
     expect(module_context).toMatchSnapshot();
 }

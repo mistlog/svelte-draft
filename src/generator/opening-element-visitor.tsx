@@ -1,85 +1,89 @@
 import { IGenerator } from "./generator";
 import { NodePath, Node } from "@babel/core";
-import { ObjectPattern, identifier, jsxExpressionContainer, jsxAttribute, Identifier, ObjectExpression, stringLiteral, CallExpression, ObjectProperty, JSXOpeningElement, jsxNamespacedName, jsxIdentifier, JSXAttribute, JSXElement, JSXExpressionContainer } from "@babel/types";
+import {
+    ObjectPattern,
+    identifier,
+    jsxExpressionContainer,
+    jsxAttribute,
+    Identifier,
+    ObjectExpression,
+    stringLiteral,
+    CallExpression,
+    ObjectProperty,
+    JSXOpeningElement,
+    jsxNamespacedName,
+    jsxIdentifier,
+    JSXAttribute,
+    JSXElement,
+    JSXExpressionContainer,
+} from "@babel/types";
 import { ToString, ToAst } from "typedraft";
 
-export class OpeningElementVisitor { }
+export class OpeningElementVisitor {}
 
-<OpeningElementVisitor /> + function Visit(e: NodePath<JSXOpeningElement>, generator: IGenerator)
-{
-    //@ts-ignore
-    <HandleSlotProps />;
+<OpeningElementVisitor /> +
+    function Visit(e: NodePath<JSXOpeningElement>, generator: IGenerator) {
+        //@ts-ignore
+        <HandleSlotProps />;
 
-    //@ts-ignore
-    <HandleAttributes />;
+        //@ts-ignore
+        <HandleAttributes />;
 
-    //
-    const name = e.get("name");
-    if (!name.isJSXIdentifier()) return;
+        //
+        const name = e.get("name");
+        if (!name.isJSXIdentifier()) return;
 
-    //
-    const Append = generator.Append.bind(generator);
-    const tag_name = name.node.name;
+        //
+        const Append = generator.Append.bind(generator);
+        const tag_name = name.node.name;
 
-    //@ts-ignore
-    <HandleOpeningElement />;
-}
+        //@ts-ignore
+        <HandleOpeningElement />;
+    };
 
 const TargetTable = {
-    "DoubleClick": "dblclick",
-    "InnerHTML": "innerHTML",
-    "contentEditable": "contenteditable",
-    "Ref": "this",
-    "ScrollY": "scrollY"
-}
+    DoubleClick: "dblclick",
+    InnerHTML: "innerHTML",
+    contentEditable: "contenteditable",
+    Ref: "this",
+    ScrollY: "scrollY",
+};
 
-const NamespaceList = [
-    "on", "bind"
-]
+const NamespaceList = ["on", "bind"];
 
-const DirectiveSet = new Set([
-    "transition", "in", "out", "localTransition", "animate", "use"
-])
+const DirectiveSet = new Set(["transition", "in", "out", "localTransition", "animate", "use"]);
 
-function HandleAttributes(e: NodePath<JSXOpeningElement>)
-{
+function HandleAttributes(e: NodePath<JSXOpeningElement>) {
     //@ts-ignore
     <PreprocessAttributes />;
 
-    e.node.attributes.forEach(attr =>
-    {
-        if (attr.type === "JSXAttribute" && attr.name.type === "JSXIdentifier")
-        {
+    e.node.attributes.forEach(attr => {
+        if (attr.type === "JSXAttribute" && attr.name.type === "JSXIdentifier") {
             const name = attr.name.name;
 
-            if (DirectiveSet.has(name))
-            {
+            if (DirectiveSet.has(name)) {
                 //@ts-ignore
                 <HandleDirective />;
-            }
-            else
-            {
+            } else {
                 //@ts-ignore
                 <HandleNamespace />;
             }
         }
-    })
+    });
 }
 
-function PreprocessAttributes(e: NodePath<JSXOpeningElement>)
-{
-    e.node.attributes = e.node.attributes.reduce((container, attr) =>
-    {
-        if (attr.type === "JSXAttribute" &&
+function PreprocessAttributes(e: NodePath<JSXOpeningElement>) {
+    e.node.attributes = e.node.attributes.reduce((container, attr) => {
+        if (
+            attr.type === "JSXAttribute" &&
             attr.name.type === "JSXIdentifier" &&
-            (attr.name.name === "on" || attr.name.name === "props"))
-        {
+            (attr.name.name === "on" || attr.name.name === "props")
+        ) {
             const value = attr.value as JSXExpressionContainer;
             const config = value.expression as CallExpression;
             const [event_config] = config.arguments as [ObjectExpression];
             const properties = event_config.properties as Array<ObjectProperty>;
-            properties.forEach(each =>
-            {
+            properties.forEach(each => {
                 //
                 const prop: string = (each.key as Identifier).name;
                 const prop_value: string = ToString(each.value);
@@ -90,9 +94,7 @@ function PreprocessAttributes(e: NodePath<JSXOpeningElement>)
                 const value = stringLiteral(`{${prop_value}}`);
                 container.push(jsxAttribute(name, value));
             });
-        }
-        else
-        {
+        } else {
             container.push(attr);
         }
 
@@ -102,8 +104,7 @@ function PreprocessAttributes(e: NodePath<JSXOpeningElement>)
 
 const VerticalBar = "$VERTICAL_BAR$";
 
-function HandleDirective(attr: JSXAttribute)
-{
+function HandleDirective(attr: JSXAttribute) {
     const value = attr.value as JSXExpressionContainer;
     const config = value.expression as CallExpression;
 
@@ -113,61 +114,55 @@ function HandleDirective(attr: JSXAttribute)
 
     // use VerticalBar and replace it with | latter because | is invalid in JSX
     let namespace = name === "localTransition" ? `transition` : name;
-    let function_name = name === "localTransition" ? `${transition_function}${VerticalBar}local` : transition_function;
+    let function_name =
+        name === "localTransition"
+            ? `${transition_function}${VerticalBar}local`
+            : transition_function;
     attr.name = jsxNamespacedName(jsxIdentifier(namespace), jsxIdentifier(function_name));
     attr.value = transition_params ? stringLiteral(`{${transition_params}}`) : null;
 }
 
-function HandleNamespace(attr: JSXAttribute, name: string)
-{
-    NamespaceList.forEach(namespace =>
-    {
-        if (TargetTable[name])
-        {
+function HandleNamespace(attr: JSXAttribute, name: string) {
+    NamespaceList.forEach(namespace => {
+        if (TargetTable[name]) {
             attr.name = jsxIdentifier(TargetTable[name]);
-        }
-        else if (name.startsWith(namespace))
-        {
+        } else if (name.startsWith(namespace)) {
             const raw_target = name.substr(namespace.length);
             const target = TargetTable[raw_target] || raw_target.toLowerCase();
             attr.name = jsxNamespacedName(jsxIdentifier(namespace), jsxIdentifier(target));
         }
-
-    })
+    });
 }
 
-function HandleOpeningElement(tag_name: string)
-{
+function HandleOpeningElement(tag_name: string) {
     "use match";
 
     //@ts-ignore
-    (tag_name: "debug") => { <HandleDebug /> }
+    (tag_name: "debug") => <HandleDebug />;
 
     //@ts-ignore
-    (tag_name: "raw-html") => { <HandleRawHTML /> }
+    (tag_name: "raw-html") => <HandleRawHTML />;
 
     //@ts-ignore
-    (tag_name: "if") => { <HandleIf /> }
+    (tag_name: "if") => <HandleIf />;
 
     //@ts-ignore
-    (tag_name: "else") => { <HandleElse /> }
+    (tag_name: "else") => <HandleElse />;
 
     //@ts-ignore
-    (tag_name: "each") => { <HandleEach /> }
+    (tag_name: "each") => <HandleEach />;
 
     //@ts-ignore
-    (tag_name: "await") => { <HandleAwait /> }
+    (tag_name: "await") => <HandleAwait />;
 
     //@ts-ignore
-    () => { <HandleDefault /> }
+    () => <HandleDefault />;
 }
 
-function HandleDefault(e: NodePath<JSXOpeningElement>, Append: (value: string) => void)
-{
+function HandleDefault(e: NodePath<JSXOpeningElement>, Append: (value: string) => void) {
     // handle special elements
     const tag_name = e.get("name");
-    if (tag_name.isJSXIdentifier() && tag_name.node.name.startsWith("svelte"))
-    {
+    if (tag_name.isJSXIdentifier() && tag_name.node.name.startsWith("svelte")) {
         tag_name.node.name = (tag_name.node.name as string).replace("-", ":");
     }
 
@@ -179,48 +174,44 @@ function HandleDefault(e: NodePath<JSXOpeningElement>, Append: (value: string) =
     Append(element);
 }
 
-function HandleDebug(Append: (value: string) => void)
-{
+function HandleDebug(Append: (value: string) => void) {
     Append(`{@debug `);
 }
 
-function HandleRawHTML(Append: (value: string) => void)
-{
+function HandleRawHTML(Append: (value: string) => void) {
     Append(`{@html `);
 }
 
-function HandleIf(e: NodePath<JSXOpeningElement>, Append: (value: string) => void)
-{
+function HandleIf(e: NodePath<JSXOpeningElement>, Append: (value: string) => void) {
     const raw_condition = FindAttribute("condition", e)?.node;
 
-    const condition = raw_condition ?
-        ToString((raw_condition.value as JSXExpressionContainer).expression) :
-        "__invalid condition__";
+    const condition = raw_condition
+        ? ToString((raw_condition.value as JSXExpressionContainer).expression)
+        : "__invalid condition__";
 
     const _if = `{#if ${condition}}`;
     Append(_if);
 }
 
-function HandleElse(e: NodePath<JSXOpeningElement>, Append: (value: string) => void)
-{
+function HandleElse(e: NodePath<JSXOpeningElement>, Append: (value: string) => void) {
     const raw_condition = FindAttribute("condition", e)?.node;
 
-    const condition = raw_condition ?
-        ` if ${ToString((raw_condition.value as JSXExpressionContainer).expression)}` :
-        "";
+    const condition = raw_condition
+        ? ` if ${ToString((raw_condition.value as JSXExpressionContainer).expression)}`
+        : "";
 
     const _else = `{:else${condition}}`;
     Append(_else);
 }
 
-function HandleSlotProps(e: NodePath<JSXOpeningElement>)
-{
-    const slot_props = FindChildJSXExpressionContainer(e)?.get("expression")?.get("params").find(each => each.isObjectPattern()) as NodePath<ObjectPattern>;
-    if (slot_props)
-    {
-        const properties = (slot_props.node.properties) as Array<ObjectProperty>;
-        properties.forEach(each =>
-        {
+function HandleSlotProps(e: NodePath<JSXOpeningElement>) {
+    const slot_props = FindChildJSXExpressionContainer(e)
+        ?.get("expression")
+        ?.get("params")
+        .find(each => each.isObjectPattern()) as NodePath<ObjectPattern>;
+    if (slot_props) {
+        const properties = slot_props.node.properties as Array<ObjectProperty>;
+        properties.forEach(each => {
             const prop: string = (each.key as Identifier).name;
             const alias: string = ToString(each.value);
 
@@ -231,13 +222,12 @@ function HandleSlotProps(e: NodePath<JSXOpeningElement>)
     }
 }
 
-function HandleEach(e: NodePath<JSXOpeningElement>, Append: (value: string) => void)
-{
+function HandleEach(e: NodePath<JSXOpeningElement>, Append: (value: string) => void) {
     const raw_from = FindAttribute("from", e)?.node;
 
-    const data = raw_from ?
-        ToString((raw_from.value as JSXExpressionContainer).expression) :
-        "__invalid data__";
+    const data = raw_from
+        ? ToString((raw_from.value as JSXExpressionContainer).expression)
+        : "__invalid data__";
 
     //
     const container = FindChildJSXExpressionContainer(e);
@@ -248,17 +238,13 @@ function HandleEach(e: NodePath<JSXOpeningElement>, Append: (value: string) => v
     if (!item.isArrowFunctionExpression()) return;
 
     //
-    const [value, index, key] = item.get("params").map(param =>
-    {
-        if (param.isIdentifier())
-        {
+    const [value, index, key] = item.get("params").map(param => {
+        if (param.isIdentifier()) {
             return param.node.name;
-        }
-        else if (param.isAssignmentPattern())
-        {
+        } else if (param.isAssignmentPattern()) {
             return { is_key: true, key_name: ToString(param.get("right").node) };
         }
-    })
+    });
 
     // if we specify value, key only, key info is stored in index
     const item_part = `#each ${data} as ${value || "__invalid value__"}`;
@@ -269,8 +255,7 @@ function HandleEach(e: NodePath<JSXOpeningElement>, Append: (value: string) => v
     Append(each);
 }
 
-function HandleAwait(e: NodePath<JSXOpeningElement>, Append: (value: string) => void)
-{
+function HandleAwait(e: NodePath<JSXOpeningElement>, Append: (value: string) => void) {
     //
     const container = FindChildJSXExpressionContainer(e);
     if (!container) return;
@@ -280,7 +265,9 @@ function HandleAwait(e: NodePath<JSXOpeningElement>, Append: (value: string) => 
 
     //
     const props = info.get("properties");
-    const promise = props.find(prop => prop.isObjectProperty() && prop.node.key.name === "promise") as NodePath<ObjectProperty>;
+    const promise = props.find(
+        prop => prop.isObjectProperty() && prop.node.key.name === "promise"
+    ) as NodePath<ObjectProperty>;
     const promise_name = `${ToString(promise.node.value).split(".")[0]}`;
 
     //
@@ -289,17 +276,21 @@ function HandleAwait(e: NodePath<JSXOpeningElement>, Append: (value: string) => 
 }
 
 /*
-*/
-function FindAttribute(name: string, e: NodePath<JSXOpeningElement>)
-{
-    const attribute_list = e.get("attributes").filter(each => each.isJSXAttribute()) as Array<NodePath<JSXAttribute>>;
-    const attribute = attribute_list.find(attr => attr.get("name").isJSXIdentifier() && attr.get("name").node.name === name);
+ */
+function FindAttribute(name: string, e: NodePath<JSXOpeningElement>) {
+    const attribute_list = e.get("attributes").filter(each => each.isJSXAttribute()) as Array<
+        NodePath<JSXAttribute>
+    >;
+    const attribute = attribute_list.find(
+        attr => attr.get("name").isJSXIdentifier() && attr.get("name").node.name === name
+    );
     return attribute;
 }
 
-function FindChildJSXExpressionContainer(e: NodePath<JSXOpeningElement>)
-{
+function FindChildJSXExpressionContainer(e: NodePath<JSXOpeningElement>) {
     const tag = e.parentPath as NodePath<JSXElement>;
-    const container = tag.get("children").find(each => each.isJSXExpressionContainer()) as NodePath<JSXExpressionContainer>;
+    const container = tag.get("children").find(each => each.isJSXExpressionContainer()) as NodePath<
+        JSXExpressionContainer
+    >;
     return container;
 }
