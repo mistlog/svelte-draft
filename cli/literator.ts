@@ -9,25 +9,28 @@ import {
 import * as traverse from "filewalker";
 import * as watch from "node-watch";
 import { SvelteTranscriber } from "../src";
-import { config } from "./config";
-import { Transcriber } from "typedraft";
+import { Transcriber, IDSL, ITranscriber } from "typedraft";
 import { transformSync, transformAsync } from "@babel/core";
 import * as TypescriptPreset from "@babel/preset-typescript";
+
+export interface ISvelteDraftConfig {
+    DSLs: Array<{ name: string; dsl: () => IDSL }>;
+}
 
 function TraverseDirectory(path: string, callback: (name: string, path: string) => void) {
     const action = (relative: string, stats, absolute: string) => callback(relative, absolute);
     traverse(path).on("file", action).walk();
 }
 
-export function InspectDirectory(path: string) {
-    ComposeDirectory(path);
+export function InspectDirectory(path: string, config?: ISvelteDraftConfig) {
+    ComposeDirectory(path, config);
 
     //@ts-ignore
     watch(path, { recursive: true }, (event, name: string) => {
         if (name.endsWith(".tsx")) {
             console.log(event, name);
             try {
-                ComposeFile(name);
+                ComposeFile(name, config);
             } catch (error) {
                 console.log(error.message);
             }
@@ -35,15 +38,15 @@ export function InspectDirectory(path: string) {
     });
 }
 
-export function InspectFile(path: string) {
-    ComposeFile(path);
+export function InspectFile(path: string, config?: ISvelteDraftConfig) {
+    ComposeFile(path, config);
 
     //@ts-ignore
     watch(path, (event, name: string) => {
         if (name.endsWith(".tsx")) {
             console.log(event, name);
             try {
-                ComposeFile(name);
+                ComposeFile(name, config);
             } catch (error) {
                 console.log(error.message);
             }
@@ -51,11 +54,11 @@ export function InspectFile(path: string) {
     });
 }
 
-export function ComposeDirectory(path: string) {
+export function ComposeDirectory(path: string, config?: ISvelteDraftConfig) {
     TraverseDirectory(path, (relative: string, absolute: string) => {
         if (absolute.endsWith(".tsx")) {
             try {
-                ComposeFile(absolute);
+                ComposeFile(absolute, config);
             } catch (error) {
                 console.log(`compose file failed: ${error.message}, source: ${relative}`);
             }
@@ -71,24 +74,24 @@ export function CrossoutDirectory(path: string) {
     });
 }
 
-export function ComposeFile(source: string) {
+export function ComposeFile(source: string, config?: ISvelteDraftConfig) {
     if (source.endsWith(".js.tsx") || source.endsWith(".ts")) {
-        const code = TranscribeTypeDraftSync(source);
+        const code = TranscribeTypeDraftSync(source, config);
         outputFileSync(
             source.replace(source.endsWith(".js.tsx") ? ".js.tsx" : ".ts", ".js"),
             code,
             "utf8"
         );
     } else if (source.endsWith(".tsx")) {
-        const component = TranscribeSvelteDraftSync(source);
+        const component = TranscribeSvelteDraftSync(source, config);
         outputFileSync(source.replace(".tsx", ".svelte"), component, "utf8");
     }
 }
 
-export async function TranscribeTypeDraftAsync(source: string) {
+export async function TranscribeTypeDraftAsync(source: string, config?: ISvelteDraftConfig) {
     const code = await readFile(source, "utf8");
     const transcriber = new Transcriber(code);
-    config.dsls.forEach(dsl => transcriber.AddDSL(dsl.name, dsl.dsl));
+    AddDSLs(transcriber, config);
 
     const ts_code = transcriber.Transcribe();
 
@@ -101,10 +104,10 @@ export async function TranscribeTypeDraftAsync(source: string) {
     return js_code.code;
 }
 
-export function TranscribeTypeDraftSync(source: string) {
+export function TranscribeTypeDraftSync(source: string, config?: ISvelteDraftConfig) {
     const code = readFileSync(source, "utf8");
     const transcriber = new Transcriber(code);
-    config.dsls.forEach(dsl => transcriber.AddDSL(dsl.name, dsl.dsl));
+    AddDSLs(transcriber, config);
 
     const ts_code = transcriber.Transcribe();
 
@@ -117,10 +120,13 @@ export function TranscribeTypeDraftSync(source: string) {
     return js_code;
 }
 
-export async function TranscribeSvelteDraftAsync(source: string) {
+export async function TranscribeSvelteDraftAsync(source: string, config?: ISvelteDraftConfig) {
     //
     const code = await readFile(source, "utf8");
-    const { import_section, script_section, template_section, module_context } = Transcribe(code);
+    const { import_section, script_section, template_section, module_context } = Transcribe(
+        code,
+        config
+    );
 
     //
     const style_path = source.replace(".tsx", ".css");
@@ -137,10 +143,13 @@ export async function TranscribeSvelteDraftAsync(source: string) {
     return component;
 }
 
-export function TranscribeSvelteDraftSync(source: string) {
+export function TranscribeSvelteDraftSync(source: string, config?: ISvelteDraftConfig) {
     //
     const code = readFileSync(source, "utf8");
-    const { import_section, script_section, template_section, module_context } = Transcribe(code);
+    const { import_section, script_section, template_section, module_context } = Transcribe(
+        code,
+        config
+    );
 
     //
     const style = source.replace(".tsx", ".css");
@@ -157,12 +166,16 @@ export function TranscribeSvelteDraftSync(source: string) {
     return component;
 }
 
-function Transcribe(code: string) {
+function Transcribe(code: string, config?: ISvelteDraftConfig) {
     const transcriber = new SvelteTranscriber(code);
-    config.dsls.forEach(dsl => transcriber.AddDSL(dsl.name, dsl.dsl));
+    AddDSLs(transcriber, config);
     const module_context = transcriber.ExtractModuleContext();
     const { import_section, script_section, template_section } = transcriber.TranscribeToSections();
     return { import_section, script_section, template_section, module_context };
+}
+
+function AddDSLs(transcriber: ITranscriber, config: ISvelteDraftConfig) {
+    config.DSLs.forEach(({ name, dsl }) => transcriber.AddDSL(name, dsl()));
 }
 
 function AssembleComponent(
