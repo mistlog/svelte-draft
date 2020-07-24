@@ -19,7 +19,7 @@
         "dist"
     ],
     "bin": {
-        "sd": "cli/cli.js"
+        "sd": "dist/cli/cli.js"
     },
     "main": "src/index.js",
     "types": "src/index.d.ts",
@@ -32,7 +32,7 @@
         "pretest": "npm run clean:ts && npm run transcribe",
         "test": "jest --coverage",
         "test:watch": "jest --watch",
-        "prebuild": "npm run clean:dist",
+        "prebuild": "npm run clean:dist && npm run clean:ts",
         "build": "npm run transcribe && tsc",
         "postbuild": "npm run clean:ts",
         "dev": "npm run transcribe:watch",
