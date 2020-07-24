@@ -41,6 +41,23 @@ describe("translate script section", () => {
         SnapshotTest(code);
     });
 
+    test("track change: inline", () => {
+        const code = `
+            export default function App()
+            {
+                let count = 0;
+                let doubled = 0;
+            
+                {
+                    "use watch";
+                    doubled = count * 2;
+                }
+            }
+        `;
+
+        SnapshotTest(code);
+    });
+
     test("ignore variable declaration starts with $", () => {
         const code = `
             export default function App()
