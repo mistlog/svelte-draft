@@ -34,6 +34,8 @@
         "test:watch": "jest --watch",
         "prebuild": "npm run clean:dist && npm run clean:ts",
         "build": "npm run transcribe && tsc",
+        "bundle": "webpack",
+        "bundle:types": "npm run transcribe && tsc --emitDeclarationOnly --outFile ./dist/browser/index.d.ts",
         "postbuild": "npm run clean:ts",
         "dev": "npm run transcribe:watch",
         "transcribe": "td ./src",
@@ -68,7 +70,9 @@
         "pretty-quick": "^2.0.1",
         "ts-jest": "^24.0.2",
         "ts-node": "^8.3.0",
-        "typescript": "^3.8.3"
+        "typescript": "^3.8.3",
+        "webpack": "^4.44.2",
+        "webpack-cli": "^3.3.12"
     },
     "husky": {
         "hooks": {

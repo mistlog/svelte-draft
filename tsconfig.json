@@ -7,9 +7,5 @@
         "declaration": true,
         "jsx": "preserve"
     },
-    "include": [
-        "src/**/*.ts",
-        "cli/**/*.ts",
-        "utility/**/*.ts"
-    ]
+    "include": ["src/**/*.ts", "cli/**/*.ts", "utility/**/*.ts"]
 }
