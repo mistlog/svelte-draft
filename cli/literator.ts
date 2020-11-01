@@ -69,7 +69,7 @@ export function ComposeDirectory(path: string, config?: ISvelteDraftConfig) {
 export function CrossoutDirectory(path: string) {
     TraverseDirectory(path, (relative: string, absolute: string) => {
         if (absolute.endsWith(".tsx")) {
-            removeSync(absolute.replace(".tsx", ""));
+            removeSync(absolute.replace(".tsx", ".svelte"));
         }
     });
 }
