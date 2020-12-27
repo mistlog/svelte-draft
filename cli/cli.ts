@@ -1,66 +1,75 @@
 #!/usr/bin/env node
 import * as program from "commander";
-import {
-    ComposeFile,
-    ComposeDirectory,
-    InspectDirectory,
-    InspectFile,
-    CrossoutDirectory,
-    ISvelteDraftConfig,
-} from "./literator";
-import { resolve } from "path";
-import { lstatSync } from "fs";
-import { readJSONSync } from "fs-extra";
+import { ComposeDirectory, CrossoutDirectory } from "./literator";
+import { resolve, basename, join } from "path";
+import { lstatSync, readJSONSync, copySync, emptyDirSync } from "fs-extra";
 
-import { cosmiconfig } from "cosmiconfig";
-import { default as tsLoader } from "@endemolshinegroup/cosmiconfig-typescript-loader";
+import { addSvelteExtension } from "./fix";
+import { generateType } from "./type";
+import { withConfig } from "./config";
 
-const package_json = readJSONSync(resolve(__dirname, "../../package.json"));
-program.version(package_json.version);
-program.option("-w, --watch", "compose file or files in directory in watch mode");
-program.option("-clean, --clean", "remove generated files");
-program.parse(process.argv);
+const packageJSON = readJSONSync(resolve(__dirname, "../../package.json"));
+program.version(packageJSON.version);
 
-const args = program.args;
+//
+program
+    .command("build")
+    .description("build component and script")
+    .action(() => {
+        withConfig(config => {
+            const { include, outDir } = config;
+            const workingDirectory = process.cwd();
 
-if (args.length === 0) {
-    program.help();
-} else {
-    const [target] = args;
+            include.forEach(inDir => {
+                const path = resolve(workingDirectory, inDir);
+                if (lstatSync(path).isDirectory()) {
+                    ComposeDirectory(path, config, () => {
+                        const newOutDir = join(outDir, basename(inDir));
+                        emptyDirSync(newOutDir);
+                        copySync(inDir, newOutDir, {
+                            filter: (src, dest) => {
+                                if (
+                                    basename(src).endsWith(".tsx") ||
+                                    basename(src).endsWith(".ts")
+                                ) {
+                                    return false;
+                                }
 
-    if (target) {
-        if (program.clean) {
-            CrossoutDirectory(target);
-        } else {
-            Transcribe(target);
-        }
-    }
-}
+                                return true;
+                            },
+                        });
+                        addSvelteExtension(newOutDir);
+                    });
+                }
+            });
 
-function Transcribe(target: string) {
-    //
-    // find config
-    const explorer = cosmiconfig("svelte-draft", {
-        searchPlaces: [`svelte-draft.config.ts`],
-        loaders: {
-            ".ts": tsLoader,
-        },
+            generateType(include, outDir);
+        });
     });
-
-    explorer.search().then(config_info => {
-        let config: ISvelteDraftConfig = { DSLs: [] };
-        if (config_info && !config_info.isEmpty) {
-            config = { ...config, ...config_info.config };
-        }
-
-        //
-        const working_directory = process.cwd();
-        const path = resolve(working_directory, target);
-
+//
+program
+    .command("transcribe <dir>")
+    .description("generate component and script")
+    .action(dir => {
+        withConfig(config => {
+            const path = resolve(process.cwd(), dir);
+            if (lstatSync(path).isDirectory()) {
+                ComposeDirectory(path, config, () => {
+                    addSvelteExtension(path);
+                });
+            }
+        });
+    });
+//
+program
+    .command("clean <dir>")
+    .description("remove generated files")
+    .action(dir => {
+        const path = resolve(process.cwd(), dir);
         if (lstatSync(path).isDirectory()) {
-            program.watch ? InspectDirectory(path, config) : ComposeDirectory(path, config);
-        } else {
-            program.watch ? InspectFile(path, config) : ComposeFile(path, config);
+            CrossoutDirectory(path);
         }
     });
-}
+
+//
+program.parse(process.argv);
