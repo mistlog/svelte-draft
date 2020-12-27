@@ -15,11 +15,17 @@ import * as TypescriptPreset from "@babel/preset-typescript";
 
 export interface ISvelteDraftConfig {
     DSLs: Array<{ name: string; dsl: () => IDSL }>;
+    include?: Array<string>;
+    outDir?: string;
 }
 
-function TraverseDirectory(path: string, callback: (name: string, path: string) => void) {
+function TraverseDirectory(
+    path: string,
+    callback: (name: string, path: string) => void,
+    onTraverseEnd = () => {}
+) {
     const action = (relative: string, stats, absolute: string) => callback(relative, absolute);
-    traverse(path).on("file", action).walk();
+    traverse(path).on("file", action).on("done", onTraverseEnd).walk();
 }
 
 export function InspectDirectory(path: string, config?: ISvelteDraftConfig) {
@@ -54,22 +60,32 @@ export function InspectFile(path: string, config?: ISvelteDraftConfig) {
     });
 }
 
-export function ComposeDirectory(path: string, config?: ISvelteDraftConfig) {
-    TraverseDirectory(path, (relative: string, absolute: string) => {
-        if (absolute.endsWith(".tsx")) {
-            try {
-                ComposeFile(absolute, config);
-            } catch (error) {
-                console.log(`compose file failed: ${error.message}, source: ${relative}`);
+export function ComposeDirectory(
+    path: string,
+    config?: ISvelteDraftConfig,
+    onTraverseEnd = () => {}
+) {
+    TraverseDirectory(
+        path,
+        (relative: string, absolute: string) => {
+            if (absolute.endsWith(".tsx") || absolute.endsWith(".ts")) {
+                try {
+                    ComposeFile(absolute, config);
+                } catch (error) {
+                    console.log(`compose file failed: ${error.message}, source: ${relative}`);
+                }
             }
-        }
-    });
+        },
+        onTraverseEnd
+    );
 }
 
 export function CrossoutDirectory(path: string) {
     TraverseDirectory(path, (relative: string, absolute: string) => {
         if (absolute.endsWith(".tsx")) {
-            removeSync(absolute.replace(".tsx", ""));
+            removeSync(absolute.replace(".tsx", ".svelte"));
+        } else if (absolute.endsWith(".ts")) {
+            removeSync(absolute.replace(".ts", ".js"));
         }
     });
 }
